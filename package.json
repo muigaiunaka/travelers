@@ -1,0 +1,35 @@
+{
+  "name": "travelers",
+  "version": "1.0.0",
+  "description": "a place for travelers to come together",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.5.3",
+    "express": "^4.13.4",
+    "express-session": "^1.14.2",
+    "mongoose": "^4.4.15",
+    "multer": "^1.3.0",
+    "passport": "^0.3.2",
+    "passport-google-oauth": "^1.0.0",
+    "passport-local": "^1.0.0",
+    "pg": "^6.1.4",
+    "q": "^1.4.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "babel": "babel --presets es2015 js/main.js -o build/main.bundle.js",
+    "start": "http-server",
+    "webpack": "webpack"
+  },
+  "author": "Ari Ross",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.2.1",
+    "babel-loader": "^6.4.1",
+    "babel-preset-es2015": "^6.1.18",
+    "webpack": "^2.3.2",
+    "webpack-dev-server": "2.2.0"
+  }
+}
