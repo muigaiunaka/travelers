@@ -1,0 +1,28 @@
+<main class="container">
+    <h1>Login</h1>
+
+    <!-- <div ng-show="logModel.error" class="alert alert-danger" role="alert">
+        {{logModel.error}}
+    </div> -->
+
+    <form>
+        <input ng-model="user.username" 
+        	   name="username" 
+        	   id="username" 
+        	   type="text" 
+        	   placeholder="username" 
+        	   class="form-control" />
+
+        <input ng-model="user.password" 
+        	   name="password" 
+        	   id="password" 
+        	   type="password" 
+        	   placeholder="password" 
+        	   class="form-control" />
+
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+        <button type="submit" class="btn btn-success btn-block">Register</button>
+        <!-- <button ng-click="logModel.login(user)" type="submit" class="btn btn-primary btn-block">Login</button>
+        <a href="#/register" class="btn btn-success btn-block">Register</a> -->
+    </form>
+</main>

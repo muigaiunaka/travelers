@@ -1,6 +1,5 @@
 var express = require('express');
 var app = express();
-var webpack = require('webpack');
 
 // install, load, and configure body parser module
 var bodyParser = require('body-parser');
