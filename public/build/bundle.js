@@ -63,14 +63,14 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(6);
+__webpack_require__(8);
 module.exports = 'ngRoute';
 
 
@@ -78,7 +78,7 @@ module.exports = 'ngRoute';
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(7);
+__webpack_require__(9);
 module.exports = angular;
 
 
@@ -95,7 +95,7 @@ module.exports = angular;
 // import './config.js';
 
 (function () {
-  angular.module("TravelApp", ["ngRoute"]);
+  angular.module("TravelApp", ["ngRoute", "appDirectives"]);
 })();
 
 /***/ }),
@@ -106,18 +106,69 @@ module.exports = angular;
 
 
 (function () {
-		angular.module("TravelApp").config(Config);
-		function Config($routeProvider) {
-				$routeProvider.when("/", {
-						templateUrl: 'views/user/templates/login.view.client.html',
-						controller: "loginController",
-						controllerAs: "model"
-				});
-		}
+	angular.module("TravelApp").config(Config);
+	function Config($routeProvider) {
+		$routeProvider.when("/", {
+			templateUrl: 'views/search.view.client.html',
+			controller: "searchController",
+			controllerAs: "model"
+		}).when("/login", {
+			templateUrl: 'views/user/templates/login.view.client.html',
+			controller: "loginController",
+			controllerAs: "model"
+		});
+	}
 })();
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("appDirectives", []).directive("appHeader", appHeader).directive("jgaAutocomplete", jgaAutocomplete);
+
+	function appHeader() {
+		function linkFunction() {
+			// TODO: lol fix yo life. And add some code.
+		}
+
+		return {
+			restrict: 'A',
+			templateUrl: '/includes/header.template.html',
+			link: linkFunction
+		};
+	}
+
+	function jgaAutocomplete() {
+		function linkFunction() {
+			console.log("autocomplete");
+		}
+		return {
+			link: linkFunction
+		};
+	}
+})();
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("TravelApp").controller("searchController", searchController);
+
+	function searchController() {
+		var vm = this;
+	}
+})();
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -132,16 +183,16 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(11);
+var content = __webpack_require__(13);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(15)(content, {});
+var update = __webpack_require__(17)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -158,7 +209,7 @@ if(false) {
 }
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports) {
 
 /**
@@ -1393,7 +1444,7 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports) {
 
 /**
@@ -34743,7 +34794,7 @@ $provide.value("$locale", {
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34752,25 +34803,26 @@ $provide.value("$locale", {
 // where all scripts go so that they can be compiled
 console.log("Main Scripts Loaded");
 
-// import 'angular';
-// import 'angular-route';
-// import '../public/app.js';
-// import '../styles/main.scss';
+/* Dependencies */
 __webpack_require__(1);
 __webpack_require__(0);
 
 /* Stylesheets */
-__webpack_require__(5);
+__webpack_require__(7);
+
+/* Directives */
+__webpack_require__(4);
 
 /* Scripts */
 __webpack_require__(2);
 __webpack_require__(3);
 
 /* Controllers */
-__webpack_require__(4);
+__webpack_require__(6);
+__webpack_require__(5);
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34891,7 +34943,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34905,9 +34957,9 @@ function fromByteArray (uint8) {
 
 
 
-var base64 = __webpack_require__(9)
-var ieee754 = __webpack_require__(13)
-var isArray = __webpack_require__(14)
+var base64 = __webpack_require__(11)
+var ieee754 = __webpack_require__(15)
+var isArray = __webpack_require__(16)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -36685,13 +36737,13 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(12)(undefined);
+exports = module.exports = __webpack_require__(14)(undefined);
 // imports
 
 
@@ -36702,7 +36754,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {/*
@@ -36781,10 +36833,10 @@ function toComment(sourceMap) {
   return '/*# ' + data + ' */';
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12).Buffer))
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -36874,7 +36926,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -36885,7 +36937,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -36922,7 +36974,7 @@ var stylesInDom = {},
 	singletonElement = null,
 	singletonCounter = 0,
 	styleElementsInsertedAtTop = [],
-	fixUrls = __webpack_require__(16);
+	fixUrls = __webpack_require__(18);
 
 module.exports = function(list, options) {
 	if(typeof DEBUG !== "undefined" && DEBUG) {
@@ -37181,7 +37233,7 @@ function updateLink(linkElement, options, obj) {
 
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports) {
 
 
@@ -37276,7 +37328,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports) {
 
 var g;

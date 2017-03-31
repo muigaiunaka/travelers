@@ -6,5 +6,5 @@
 (function () {
   angular
     .module ("TravelApp",
-      ["ngRoute"]);
+      ["ngRoute", "appDirectives"]);
 })();
