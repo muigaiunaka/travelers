@@ -1,0 +1,13 @@
+// center position an element
+
+@mixin posCenter($pos, $t, $l) {
+	position: $pos;
+	@if $t != 0 {
+		top: $t;
+	}
+	@if $l != 0 {
+		left: $l;
+	}
+	transform: translate(-$l, -$t);
+	vertical-align: middle;
+}

@@ -1,0 +1,11 @@
+.navbar {
+	.navbar-header {
+		position: relative;
+		.navbar-brand { color: $white; }
+		.profile-icon {
+			@include posCenter(absolute, 50%, 0%);
+			right: 0;
+			color: $white;
+		}
+	}
+}

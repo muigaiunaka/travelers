@@ -1,0 +1,39 @@
+.trip-results {
+	.trip-list {
+		.trip {
+			display: block;
+			margin: 10px auto;
+			background-color: $white;
+			&:first-child { margin-top: 0; }
+			&__img {
+				display: block;
+				width: 100%;
+				position: relative;
+				height: 100px;
+				overflow: hidden;
+				img {
+					@include posCenter(absolute, 50%, 50%);
+				}
+			}
+			&__copy {
+				padding: 5px 15px 20px;
+				&__title {}
+				&__countries {
+					display: block;
+					&__item {
+						display: inline-block;
+						margin: 5px;
+						&:first-child { margin-left: 0; }
+					}
+				}
+				&__length {
+					display: inline-block;
+				}
+				&__cost {
+					display: inline-block;
+					margin-left: 10px;
+				}
+			}
+		}
+	}
+}

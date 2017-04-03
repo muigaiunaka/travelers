@@ -63,14 +63,14 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 22);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(8);
+__webpack_require__(20);
 module.exports = 'ngRoute';
 
 
@@ -78,7 +78,7 @@ module.exports = 'ngRoute';
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(9);
+__webpack_require__(21);
 module.exports = angular;
 
 
@@ -109,13 +109,61 @@ module.exports = angular;
 	angular.module("TravelApp").config(Config);
 	function Config($routeProvider) {
 		$routeProvider.when("/", {
-			templateUrl: 'views/search.view.client.html',
-			controller: "searchController",
-			controllerAs: "model"
+			templateUrl: 'views/trips/templates/search.view.client.html',
+			controller: 'searchController',
+			controllerAs: 'model'
+		}).when("/search", {
+			templateUrl: 'views/trips/templates/search.view.client.html',
+			controller: 'searchController',
+			controllerAs: 'model'
+		}).when("default", {
+			templateUrl: 'views/trips/templates/search.view.client.html',
+			controller: 'searchController',
+			controllerAs: 'model'
 		}).when("/login", {
 			templateUrl: 'views/user/templates/login.view.client.html',
-			controller: "loginController",
-			controllerAs: "model"
+			controller: 'loginController',
+			controllerAs: 'model'
+		}).when("/register", {
+			templateUrl: 'views/user/templates/register.view.client.html',
+			controller: 'registerController',
+			controllerAs: 'model'
+		}).when("/profile", {
+			templateUrl: 'views/user/templates/profile.view.client.html',
+			controller: 'profileController',
+			controllerAs: 'model'
+		}).when("/new-plan", {
+			templateUrl: 'views/plan/templates/new-plan.view.client.html',
+			controller: 'newPlanController',
+			controllerAs: 'model'
+		}).when("/edit-plan-country", {
+			templateUrl: 'views/plan/templates/edit-plan-country.view.client.html',
+			controller: 'editPlanCountryController',
+			controllerAs: 'model'
+		}).when("/edit-plan-interest", {
+			templateUrl: 'views/plan/templates/edit-plan-interest.view.client.html',
+			controller: 'editPlanInterestController',
+			controllerAs: 'model'
+		}).when("/edit-plan-route", {
+			templateUrl: 'views/plan/templates/edit-plan-route.view.client.html',
+			controller: 'editPlanRouteController',
+			controllerAs: 'model'
+		}).when("/edit-plan-lodging", {
+			templateUrl: 'views/plan/templates/edit-plan-lodging.view.client.html',
+			controller: 'editPlanLodgingController',
+			controllerAs: 'model'
+		}).when("/edit-plan-timeline", {
+			templateUrl: 'views/plan/templates/edit-plan-timeline.view.client.html',
+			controller: 'editPlanTimelineController',
+			controllerAs: 'model'
+		}).when("/trip-results", {
+			templateUrl: 'views/trips/templates/trip-results.view.client.html',
+			controller: 'tripResultController',
+			controllerAs: 'model'
+		}).when("/trip-review", {
+			templateUrl: 'views/trips/templates/trip-review.view.client.html',
+			controller: 'tripReviewController',
+			controllerAs: 'model'
 		});
 	}
 })();
@@ -128,7 +176,18 @@ module.exports = angular;
 
 
 (function () {
-	angular.module("appDirectives", []).directive("appHeader", appHeader).directive("jgaAutocomplete", jgaAutocomplete);
+	angular.module("appDirectives", []);
+})();
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("appDirectives").directive("appHeader", appHeader);
 
 	function appHeader() {
 		function linkFunction() {
@@ -141,11 +200,58 @@ module.exports = angular;
 			link: linkFunction
 		};
 	}
+})();
 
-	function jgaAutocomplete() {
-		function linkFunction() {
-			console.log("autocomplete");
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("appDirectives").directive("jgaSearchAuto", jgaSearchAuto);
+
+	function jgaSearchAuto() {
+		function linkFunction(scope, element) {
+
+			var availableTags = ["Japan", "South Korea", "Thailand"];
+
+			function split(val) {
+				return val.split(/,\s*/);
+			}
+			function extractLast(term) {
+				return split(term).pop();
+			}
+
+			$('#search').on("keydown", function (event) {
+				if (event.keyCode === $.ui.keyCode.TAB && $(this).autocomplete("instance").menu.active) {
+					event.preventDefault();
+				}
+			}).autocomplete({
+				minLength: 0,
+				source: function source(request, response) {
+					// delegate back to autocomplete, but extract the last term
+					response($.ui.autocomplete.filter(availableTags, extractLast(request.term)));
+				},
+				focus: function focus() {
+					// prevent value inserted on focus
+					return false;
+				},
+				select: function select(event, ui) {
+					var terms = split(this.value);
+					// remove the current input
+					terms.pop();
+					// add the selected item
+					terms.push(ui.item.value);
+					// add placeholder to get the comma-and-space at the end
+					terms.push("");
+					this.value = terms.join(", ");
+					return false;
+				}
+			});
 		}
+
 		return {
 			link: linkFunction
 		};
@@ -153,7 +259,97 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 5 */
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("TravelApp").controller("editPlanCountryController", editPlanCountryController);
+
+	function editPlanCountryController() {
+		var vm = this;
+	}
+})();
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("TravelApp").controller("editPlanInterestController", editPlanInterestController);
+
+	function editPlanInterestController() {
+		var vm = this;
+	}
+})();
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("TravelApp").controller("editPlanLodgingController", editPlanLodgingController);
+
+	function editPlanLodgingController() {
+		var vm = this;
+	}
+})();
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("TravelApp").controller("editPlanRouteController", editPlanRouteController);
+
+	function editPlanRouteController() {
+		var vm = this;
+	}
+})();
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("TravelApp").controller("editPlanTimelineController", editPlanTimelineController);
+
+	function editPlanTimelineController() {
+		var vm = this;
+	}
+})();
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("TravelApp").controller("newPlanController", newPlanController);
+
+	function newPlanController() {
+		var vm = this;
+	}
+})();
+
+/***/ }),
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -168,7 +364,37 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 6 */
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("TravelApp").controller("tripResultController", tripResultController);
+
+	function tripResultController() {
+		var vm = this;
+	}
+})();
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("TravelApp").controller("tripReviewController", tripReviewController);
+
+	function tripReviewController() {
+		var vm = this;
+	}
+})();
+
+/***/ }),
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -183,16 +409,46 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 7 */
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("TravelApp").controller("profileController", profileController);
+
+	function profileController() {
+		var vm = this;
+	}
+})();
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("TravelApp").controller("registerController", registerController);
+
+	function registerController() {
+		var vm = this;
+	}
+})();
+
+/***/ }),
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(13);
+var content = __webpack_require__(25);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(17)(content, {});
+var update = __webpack_require__(29)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -209,7 +465,7 @@ if(false) {
 }
 
 /***/ }),
-/* 8 */
+/* 20 */
 /***/ (function(module, exports) {
 
 /**
@@ -1444,7 +1700,7 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 
 /***/ }),
-/* 9 */
+/* 21 */
 /***/ (function(module, exports) {
 
 /**
@@ -34794,7 +35050,7 @@ $provide.value("$locale", {
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
 
 /***/ }),
-/* 10 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34808,21 +35064,33 @@ __webpack_require__(1);
 __webpack_require__(0);
 
 /* Stylesheets */
-__webpack_require__(7);
+__webpack_require__(19);
 
 /* Directives */
 __webpack_require__(4);
+__webpack_require__(5);
+__webpack_require__(6);
 
 /* Scripts */
 __webpack_require__(2);
 __webpack_require__(3);
 
 /* Controllers */
-__webpack_require__(6);
-__webpack_require__(5);
+__webpack_require__(16);
+__webpack_require__(18);
+__webpack_require__(17);
+__webpack_require__(14);
+__webpack_require__(15);
+__webpack_require__(13);
+__webpack_require__(12);
+__webpack_require__(7);
+__webpack_require__(8);
+__webpack_require__(10);
+__webpack_require__(9);
+__webpack_require__(11);
 
 /***/ }),
-/* 11 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34943,7 +35211,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 12 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34957,9 +35225,9 @@ function fromByteArray (uint8) {
 
 
 
-var base64 = __webpack_require__(11)
-var ieee754 = __webpack_require__(15)
-var isArray = __webpack_require__(16)
+var base64 = __webpack_require__(23)
+var ieee754 = __webpack_require__(27)
+var isArray = __webpack_require__(28)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -36737,24 +37005,24 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(31)))
 
 /***/ }),
-/* 13 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(14)(undefined);
+exports = module.exports = __webpack_require__(26)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, "/* Variables */\n/* Colors */\n/* Components */\n.navbar .navbar-header {\n  position: relative; }\n  .navbar .navbar-header .navbar-brand {\n    color: #FFFFFF; }\n  .navbar .navbar-header .profile-icon {\n    position: absolute;\n    top: 50%;\n    transform: translate(0%, -50%);\n    vertical-align: middle;\n    right: 0;\n    color: #FFFFFF; }\n\n/* Pages */\n.search .bg-img {\n  position: fixed;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  vertical-align: middle;\n  z-index: -1; }\n\n.search .title {\n  color: white;\n  font-weight: bold;\n  text-align: center;\n  margin: 20px auto; }\n\n.login .bg-img {\n  position: fixed;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  vertical-align: middle;\n  z-index: -1; }\n\n.login h1 {\n  font-weight: bold;\n  color: #FFFFFF; }\n\n.profile .summary__img {\n  display: block;\n  width: 100%;\n  position: relative;\n  height: 100px;\n  overflow: hidden; }\n  .profile .summary__img img {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    vertical-align: middle; }\n\n.profile .past__last .trip {\n  display: block;\n  margin: 10px auto;\n  background-color: #FFFFFF;\n  width: 100%;\n  overflow: hidden; }\n  .profile .past__last .trip:first-child {\n    margin-top: 0; }\n  .profile .past__last .trip__img {\n    display: block;\n    width: 100%;\n    position: relative;\n    height: 100px;\n    overflow: hidden; }\n    .profile .past__last .trip__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n  .profile .past__last .trip__copy {\n    padding: 5px 15px 20px; }\n    .profile .past__last .trip__copy__countries {\n      display: block; }\n      .profile .past__last .trip__copy__countries__item {\n        display: inline-block;\n        margin: 5px; }\n        .profile .past__last .trip__copy__countries__item:first-child {\n          margin-left: 0; }\n    .profile .past__last .trip__copy__length {\n      display: inline-block; }\n    .profile .past__last .trip__copy__cost {\n      display: inline-block;\n      margin-left: 10px; }\n\n.trip-results .trip-list .trip {\n  display: block;\n  margin: 10px auto;\n  background-color: #FFFFFF; }\n  .trip-results .trip-list .trip:first-child {\n    margin-top: 0; }\n  .trip-results .trip-list .trip__img {\n    display: block;\n    width: 100%;\n    position: relative;\n    height: 100px;\n    overflow: hidden; }\n    .trip-results .trip-list .trip__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n  .trip-results .trip-list .trip__copy {\n    padding: 5px 15px 20px; }\n    .trip-results .trip-list .trip__copy__countries {\n      display: block; }\n      .trip-results .trip-list .trip__copy__countries__item {\n        display: inline-block;\n        margin: 5px; }\n        .trip-results .trip-list .trip__copy__countries__item:first-child {\n          margin-left: 0; }\n    .trip-results .trip-list .trip__copy__length {\n      display: inline-block; }\n    .trip-results .trip-list .trip__copy__cost {\n      display: inline-block;\n      margin-left: 10px; }\n\n.trip-review {\n  padding: 0; }\n  .trip-review .map {\n    width: 0;\n    height: 0; }\n  .trip-review .summary {\n    background-color: #E2DE9D;\n    display: block;\n    width: 100%;\n    padding: 15px; }\n    .trip-review .summary__title {\n      font-weight: bold;\n      color: #204F20; }\n    .trip-review .summary__countries {\n      display: block;\n      width: 100%; }\n      .trip-review .summary__countries__item {\n        display: inline-block;\n        margin: 10px; }\n        .trip-review .summary__countries__item:first-child {\n          margin-left: 0; }\n        .trip-review .summary__countries__item svg {\n          width: 0;\n          height: 0; }\n        .trip-review .summary__countries__item span {\n          color: #204F20;\n          font-weight: bold; }\n    .trip-review .summary__length {\n      display: inline-block;\n      color: #204F20;\n      font-weight: bold; }\n    .trip-review .summary__cities {\n      margin-left: 20px;\n      display: inline-block;\n      color: #204F20;\n      font-weight: bold; }\n    .trip-review .summary__pack {\n      margin-top: 20px; }\n    .trip-review .summary__cost {\n      width: 0;\n      height: 0; }\n  .trip-review .city {\n    position: relative;\n    color: #FFFFFF;\n    padding: 15px;\n    overflow: hidden; }\n    .trip-review .city__bg {\n      z-index: -1;\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n    .trip-review .city__arrival-date {\n      font-size: 12px; }\n    .trip-review .city__name {\n      font-weight: bold;\n      margin: 0; }\n    .trip-review .city__rating {\n      width: 0;\n      height: 0; }\n    .trip-review .city__activity__item {\n      width: 100%;\n      display: block;\n      background-color: #FFFFFF; }\n      .trip-review .city__activity__item .img-container {\n        position: relative;\n        height: 50px;\n        overflow: hidden; }\n        .trip-review .city__activity__item .img-container img {\n          position: absolute;\n          top: 50%;\n          left: 50%;\n          transform: translate(-50%, -50%);\n          vertical-align: middle; }\n      .trip-review .city__activity__item span {\n        color: black; }\n      .trip-review .city__activity__item svg {\n        width: 0;\n        height: 0; }\n    .trip-review .city__cost {\n      width: 0;\n      height: 0; }\n  .trip-review .travel {\n    padding: 15px; }\n    .trip-review .travel__icon {\n      width: 0;\n      height: 0; }\n    .trip-review .travel__airport {\n      display: block;\n      width: 100%;\n      margin-bottom: 20px; }\n      .trip-review .travel__airport p:first-child {\n        text-transform: uppercase;\n        color: #204F20;\n        margin: 0;\n        font-weight: bold; }\n      .trip-review .travel__airport h3 {\n        margin-top: 0;\n        font-weight: bold; }\n    .trip-review .travel__details p {\n      margin: 0; }\n    .trip-review .travel__length {\n      color: #204F20;\n      font-weight: bold; }\n\nbody {\n  background-color: #FFFFFF; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 14 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {/*
@@ -36833,10 +37101,10 @@ function toComment(sourceMap) {
   return '/*# ' + data + ' */';
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24).Buffer))
 
 /***/ }),
-/* 15 */
+/* 27 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -36926,7 +37194,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 16 */
+/* 28 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -36937,7 +37205,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 17 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -36974,7 +37242,7 @@ var stylesInDom = {},
 	singletonElement = null,
 	singletonCounter = 0,
 	styleElementsInsertedAtTop = [],
-	fixUrls = __webpack_require__(18);
+	fixUrls = __webpack_require__(30);
 
 module.exports = function(list, options) {
 	if(typeof DEBUG !== "undefined" && DEBUG) {
@@ -37233,7 +37501,7 @@ function updateLink(linkElement, options, obj) {
 
 
 /***/ }),
-/* 18 */
+/* 30 */
 /***/ (function(module, exports) {
 
 
@@ -37328,7 +37596,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 19 */
+/* 31 */
 /***/ (function(module, exports) {
 
 var g;

@@ -1,0 +1,54 @@
+<section class="container edit-plan-lodging">
+    <h1 class="title">Find places to stay</h1>
+
+    <aside class="picked-list">
+      <div class="input-group">
+          <div jga-search-auto class="ui-widget">
+
+          <input ng-model="user.username" 
+                 name="search" 
+                 id="search" 
+                 type="text" 
+                 placeholder="Search" 
+                 class="form-control" />
+          </div>
+
+          <span class="input-group-btn">
+              <button type="submit" class="btn btn-success">Add</button>
+          </span>
+      </div>
+      <ul class="list-unstyled">
+        <li>Something</li>
+        <li>Something</li>
+      </ul>
+    </aside>
+
+    <section class="city">
+      <h3 class="city__name">Japan</h3>
+      <ul class="city__sorting nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Popularity</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Cheapest</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Alphabetical</a>
+        </li>
+      </ul>
+      <ul class="country__interests list-unstyled">
+        <li class="country__interests__item">
+          <div class="img-container">
+            <img src="../../../imgs/bamboo.jpg">
+          </div>
+          <div class="copy">
+            <span>Guest House</span>
+            <span>$11/night</span>
+          </div>
+          <span class="glyphicon glyphicon-plus-sign"></span>
+          <!-- <span class="glyphicon glyphicon-minus-sign"></span> -->
+        </li>
+      </ul>
+    </section>
+
+</section>

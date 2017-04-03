@@ -1,3 +1,23 @@
+@import "mixins";
+@import "var";
+
+/* Components */
+@import "components/header";
+
+/* Pages */
+@import "pages/search";
+@import "pages/login";
+@import "pages/register";
+@import "pages/profile";
+@import "pages/trip-results";
+@import "pages/trip-review";
+@import "pages/new-plan";
+@import "pages/edit-plan-country";
+@import "pages/edit-plan-lodging";
+@import "pages/edit-plan-route";
+@import "pages/edit-plan-interest";
+@import "pages/edit-plan-timeline";
+
 body {
-	
+	background-color: $white;
 }

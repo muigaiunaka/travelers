@@ -1,0 +1,134 @@
+.trip-review {
+	padding: 0;
+	.map {
+		width: 0;
+		height: 0;
+	}
+	.summary {
+		background-color: $dirtyBrown;
+		display: block;
+		width: 100%;
+		padding: 15px;
+		&__title {
+			font-weight: bold;
+			color: $drkGreen;
+		}
+		&__countries {
+			display: block;
+			width: 100%;
+			&__item {
+				display: inline-block;
+				margin: 10px;
+				&:first-child { margin-left: 0; }
+				svg {
+					width: 0;
+					height: 0;
+				}
+				span {
+					color: $drkGreen;
+					font-weight: bold;
+				}
+			}
+		}
+		&__length {
+			display: inline-block;
+			color: $drkGreen;
+			font-weight: bold;
+		}
+		&__cities {
+			margin-left: 20px;
+			display: inline-block;
+			color: $drkGreen;
+			font-weight: bold;
+		}
+		&__pack {
+			margin-top: 20px;
+			&__item {}
+		}
+		&__cost {
+			width: 0;
+			height: 0;
+		}
+	}
+	.city {
+		position: relative;
+		color: $white;
+		padding: 15px;
+		overflow: hidden;
+		&__bg {
+			z-index: -1;
+			@include posCenter(absolute, 50%, 50%);
+		}
+		&__arrival-date {
+			font-size: 12px;
+		}
+		&__name {
+			font-weight: bold;
+			margin: 0;
+		}
+		&__rating {
+			width: 0;
+			height: 0;
+		}
+		&__activity {
+			&__item {
+				width: 100%;
+				display: block;
+				background-color: $white;
+				.img-container {
+					position: relative;
+					height: 50px;
+					overflow: hidden;
+					img {
+						@include posCenter(absolute, 50%, 50%);
+					}
+				}
+				span {
+					color: black;
+				}
+				svg {
+					width: 0;
+					height: 0;
+				}
+			}
+		}
+		&__lodging {
+			&__item {}
+		}
+		&__cost {
+			width: 0;
+			height: 0;
+		}
+	}
+	.travel {
+		padding: 15px;
+		&__icon {
+			width: 0;
+			height: 0;
+		}
+		&__airport {
+			display: block;
+			width: 100%;
+			margin-bottom: 20px;
+			p { 
+				&:first-child {
+					text-transform: uppercase;
+					color: $drkGreen;
+					margin: 0;
+					font-weight: bold;
+				}
+			}
+			h3 {
+				margin-top: 0;
+				font-weight: bold;
+			}
+		}
+		&__details {
+			p { margin: 0; }
+		}
+		&__length {
+			color: $drkGreen;
+			font-weight: bold;
+		}
+	}
+}

@@ -1,0 +1,13 @@
+.search {
+	.bg-img {
+		@include posCenter(fixed, 50%, 50%);
+		z-index: -1;
+	}
+
+	.title {
+		color: white;
+		font-weight: bold;
+		text-align: center;
+		margin: 20px auto;
+	}
+}

@@ -1,0 +1,10 @@
+.login {
+	.bg-img {
+		@include posCenter(fixed, 50%, 50%);
+		z-index: -1;
+	}
+	h1 {
+		font-weight: bold;
+		color: $white;
+	}
+}
