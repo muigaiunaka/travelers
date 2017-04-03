@@ -1,22 +1,55 @@
 <section class="container edit-plan-timeline">
 
-    <h1 class="title">Choose or search for countries</h1>
+    <h1 class="title">Make your timeline</h1>
 
     <form>
-        <div class="input-group">
-            <div jga-search-auto class="ui-widget">
+        <input name="startDate"
+               id="startDate"
+               type="date"
+               class="form-control" />
 
-            <input ng-model="user.username" 
-                   name="search" 
-                   id="search" 
-                   type="text" 
-                   placeholder="Search" 
-                   class="form-control" />
+        <input name="endDate"
+               id="endDate"
+               type="date"
+               class="form-control" />
+
+        <ul class="list-unstyled"> <!-- Generate list amount based on number of days between start and end -->
+          <li>
+            <h4>Day 1</h4>
+            <label for="arrival">Arrival date</label>
+            <input name="arrival"
+                   id="arrival"
+                   type="date"
+                   class="form-control">
+            
+            <!-- currently doesn't work because need correct id -->
+            <div jga-search-auto class="ui-widget"> <!-- Populate with cities chosen by user -->
+              <label for="city">Which city will you be in?</label>
+              <input  
+                     name="city" 
+                     id="city" 
+                     type="text" 
+                     placeholder="city" 
+                     class="form-control" />
             </div>
 
-            <span class="input-group-btn">
-                <button type="submit" class="btn btn-success">Explore!</button>
-            </span>
-        </div>
+            <div jga-search-auto class="ui-widget"> <!-- Populate with lodging chosen by user -->
+              <label for="lodge">Where will you stay?</label>
+              <input  
+                     name="lodge" 
+                     id="lodge" 
+                     type="text" 
+                     placeholder="Lodging" 
+                     class="form-control" />
+            </div>
+
+            <label for="nights">How many nights will you stay here?</label>
+            <input name="nights"
+                   id="nights"
+                   type="number"
+                   placeholder="e.g. 1"
+                   class="form-control" />
+          </li>
+        </ul>
     </form>
 </section>

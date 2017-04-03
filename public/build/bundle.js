@@ -63,14 +63,14 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 22);
+/******/ 	return __webpack_require__(__webpack_require__.s = 25);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(20);
+__webpack_require__(23);
 module.exports = 'ngRoute';
 
 
@@ -78,7 +78,7 @@ module.exports = 'ngRoute';
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(21);
+__webpack_require__(24);
 module.exports = angular;
 
 
@@ -266,6 +266,192 @@ module.exports = angular;
 
 
 (function () {
+    angular.module("TravelApp").factory("PlanService", PlanService);
+
+    function PlanService($http) {
+
+        var api = {
+            "createPlan": createPlan,
+            "updatePlan": updatePlan,
+            "deletePlan": deletePlan,
+            "findPlanByUserId": findPlanByUserId,
+            "findPlanById": findPlanById
+        };
+        return api;
+
+        // adds the plan parameter instance to the local plans array. The new plan's userId is set to the userId parameter
+        function createPlan(userId, plan) {
+            return $http.post("/api/user/" + userId + "/plan", plan).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // retrieves the plans in local plans array whose userId matches the parameter userId
+        function findPlanByUserId(userId) {
+            return $http.get("/api/user/" + userId + "/plan").then(function (response) {
+                return response.data;
+            });
+        }
+
+        // retrieves the plan in local plans array whose _id matches the planId parameter
+        function findPlanById(planId) {
+            return $http.get("/api/plan/" + planId).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // updates the plan in local plans array whose _id matches the planId parameter
+        function updatePlan(planId, newPlan) {
+            return $http.put("/api/plan/" + planId, newplan).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // removes the plan from local plans array whose _id matches the planId parameter
+        function deletePlan(planId) {
+            return $http.delete("/api/plan/" + planId).then(function (response) {
+                return response.data;
+            });
+        }
+    }
+})();
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+    angular.module("TravelApp").factory("TripService", TripService);
+
+    function TripService($http) {
+
+        var api = {
+            "createTrip": createTrip,
+            "createTripFromPlan": createTripFromPlan,
+            "updateTrip": updateTrip,
+            "deleteTrip": deleteTrip,
+            "findTripByUserId": findTripByUserId,
+            "findTripById": findTripById
+        };
+        return api;
+
+        // adds the trip parameter instance to the local trips array. The new trip's userId is set to the userId parameter
+        function createTrip(userId, trip) {
+            return $http.post("/api/user/" + userId + "/trip", trip).then(function (response) {
+                return response.data;
+            });
+        }
+
+        function createTripFromPlan(userId, planId) {
+            return $http.post("/api/user/" + userId + "/trip", planId);
+        }
+
+        // retrieves the trips in local trips array whose userId matches the parameter userId
+        function findTripByUserId(userId) {
+            return $http.get("/api/user/" + userId + "/trip").then(function (response) {
+                return response.data;
+            });
+        }
+
+        // retrieves the trip in local trips array whose _id matches the tripId parameter
+        function findTripById(tripId) {
+            return $http.get("/api/trip/" + tripId).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // updates the trip in local trips array whose _id matches the tripId parameter
+        function updateTrip(tripId, newtrip) {
+            return $http.put("/api/trip/" + tripId, newtrip).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // removes the trip from local trips array whose _id matches the tripId parameter
+        function deleteTrip(tripId) {
+            return $http.delete("/api/trip/" + tripId).then(function (response) {
+                return response.data;
+            });
+        }
+    }
+})();
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+    angular.module("TravelApp").service("UserService", UserService);
+
+    function UserService($http) {
+        var api = {
+            "createUser": createUser,
+            "deleteUser": deleteUser,
+            "updateUser": updateUser,
+            "findUserByCredentials": findUserByCredentials,
+            "findUserById": findUserById,
+            "findUserByUsername": findUserByUsername
+        };
+        return api;
+
+        // returns the user in local users array whose _id matches the userId parameter
+        function findUserById(userId) {
+            return $http.get("/api/user/" + userId).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // removes the user whose _id matches the userId parameter
+        function deleteUser(userId) {
+            return $http.delete("/api/user/" + userId).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // updates the user in local users array whose _id matches the userId parameter
+        function updateUser(userId, newUser) {
+            return $http.put("/api/user/" + userId, newUser).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // returns the user whose username and password match the username and password parameters
+        function findUserByCredentials(username, password) {
+            return $http.get("/api/user?username=" + username + "&password=" + password).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // returns the user in local users array whose username matches the parameter username
+        function findUserByUsername(username) {
+            return $http.get("/api/user?username=" + username).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // adds the user parameter instance to the local users array
+        function createUser(user) {
+            return $http.post("/api/user", user).then(function (response) {
+                return response.data;
+            });
+        }
+    }
+});
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
 	angular.module("TravelApp").controller("editPlanCountryController", editPlanCountryController);
 
 	function editPlanCountryController() {
@@ -274,7 +460,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 8 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -289,7 +475,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 9 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -304,7 +490,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 10 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -319,7 +505,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 11 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -334,7 +520,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 12 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -349,7 +535,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 13 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -364,7 +550,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 14 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -379,7 +565,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 15 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -394,7 +580,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 16 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -409,7 +595,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 17 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -424,7 +610,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 18 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -439,16 +625,16 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 19 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(25);
+var content = __webpack_require__(28);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(29)(content, {});
+var update = __webpack_require__(32)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -465,7 +651,7 @@ if(false) {
 }
 
 /***/ }),
-/* 20 */
+/* 23 */
 /***/ (function(module, exports) {
 
 /**
@@ -1700,7 +1886,7 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 
 /***/ }),
-/* 21 */
+/* 24 */
 /***/ (function(module, exports) {
 
 /**
@@ -35050,7 +35236,7 @@ $provide.value("$locale", {
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
 
 /***/ }),
-/* 22 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35064,7 +35250,7 @@ __webpack_require__(1);
 __webpack_require__(0);
 
 /* Stylesheets */
-__webpack_require__(19);
+__webpack_require__(22);
 
 /* Directives */
 __webpack_require__(4);
@@ -35075,22 +35261,27 @@ __webpack_require__(6);
 __webpack_require__(2);
 __webpack_require__(3);
 
-/* Controllers */
-__webpack_require__(16);
-__webpack_require__(18);
-__webpack_require__(17);
-__webpack_require__(14);
-__webpack_require__(15);
-__webpack_require__(13);
-__webpack_require__(12);
+/* Services */
 __webpack_require__(7);
 __webpack_require__(8);
-__webpack_require__(10);
 __webpack_require__(9);
+
+/* Controllers */
+__webpack_require__(19);
+__webpack_require__(21);
+__webpack_require__(20);
+__webpack_require__(17);
+__webpack_require__(18);
+__webpack_require__(16);
+__webpack_require__(15);
+__webpack_require__(10);
 __webpack_require__(11);
+__webpack_require__(13);
+__webpack_require__(12);
+__webpack_require__(14);
 
 /***/ }),
-/* 23 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35211,7 +35402,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 24 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35225,9 +35416,9 @@ function fromByteArray (uint8) {
 
 
 
-var base64 = __webpack_require__(23)
-var ieee754 = __webpack_require__(27)
-var isArray = __webpack_require__(28)
+var base64 = __webpack_require__(26)
+var ieee754 = __webpack_require__(30)
+var isArray = __webpack_require__(31)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -37005,13 +37196,13 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(31)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(34)))
 
 /***/ }),
-/* 25 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(26)(undefined);
+exports = module.exports = __webpack_require__(29)(undefined);
 // imports
 
 
@@ -37022,7 +37213,7 @@ exports.push([module.i, "/* Variables */\n/* Colors */\n/* Components */\n.navba
 
 
 /***/ }),
-/* 26 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {/*
@@ -37101,10 +37292,10 @@ function toComment(sourceMap) {
   return '/*# ' + data + ' */';
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(27).Buffer))
 
 /***/ }),
-/* 27 */
+/* 30 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -37194,7 +37385,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 28 */
+/* 31 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -37205,7 +37396,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 29 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -37242,7 +37433,7 @@ var stylesInDom = {},
 	singletonElement = null,
 	singletonCounter = 0,
 	styleElementsInsertedAtTop = [],
-	fixUrls = __webpack_require__(30);
+	fixUrls = __webpack_require__(33);
 
 module.exports = function(list, options) {
 	if(typeof DEBUG !== "undefined" && DEBUG) {
@@ -37501,7 +37692,7 @@ function updateLink(linkElement, options, obj) {
 
 
 /***/ }),
-/* 30 */
+/* 33 */
 /***/ (function(module, exports) {
 
 
@@ -37596,7 +37787,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 31 */
+/* 34 */
 /***/ (function(module, exports) {
 
 var g;

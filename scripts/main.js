@@ -17,6 +17,11 @@ require('../public/directives/js/jgaSearchAutocomplete.js');
 require ('../public/app.js');
 require ('../public/config.js');
 
+/* Services */
+require('../public/services/plan.service.client.js');
+require('../public/services/trip.service.client.js');
+require('../public/services/user.service.client.js');
+
 /* Controllers */
 require('../public/views/user/controllers/login.controller.client.js');
 require('../public/views/user/controllers/register.controller.client.js');
