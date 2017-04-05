@@ -63,14 +63,14 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 25);
+/******/ 	return __webpack_require__(__webpack_require__.s = 26);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(23);
+__webpack_require__(24);
 module.exports = 'ngRoute';
 
 
@@ -78,7 +78,7 @@ module.exports = 'ngRoute';
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(24);
+__webpack_require__(25);
 module.exports = angular;
 
 
@@ -111,7 +111,13 @@ module.exports = angular;
 		$routeProvider.when("/", {
 			templateUrl: 'views/trips/templates/search.view.client.html',
 			controller: 'searchController',
-			controllerAs: 'model'
+			controllerAs: 'model',
+			state: 'home'
+		}).when("/user/:uid/search", {
+			templateUrl: 'views/trips/templates/search.view.client.html',
+			controller: 'searchController',
+			controllerAs: 'model',
+			state: 'home'
 		}).when("/search", {
 			templateUrl: 'views/trips/templates/search.view.client.html',
 			controller: 'searchController',
@@ -119,40 +125,46 @@ module.exports = angular;
 		}).when("default", {
 			templateUrl: 'views/trips/templates/search.view.client.html',
 			controller: 'searchController',
-			controllerAs: 'model'
+			controllerAs: 'model',
+			state: 'home'
 		}).when("/login", {
 			templateUrl: 'views/user/templates/login.view.client.html',
 			controller: 'loginController',
-			controllerAs: 'model'
+			controllerAs: 'model',
+			state: 'login'
 		}).when("/register", {
 			templateUrl: 'views/user/templates/register.view.client.html',
 			controller: 'registerController',
 			controllerAs: 'model'
-		}).when("/profile", {
+		}).when("/user/:uid", {
 			templateUrl: 'views/user/templates/profile.view.client.html',
 			controller: 'profileController',
 			controllerAs: 'model'
-		}).when("/new-plan", {
+		}).when("/user/:uid/edit", {
+			templateUrl: 'views/user/templates/edit-profile.view.client.html',
+			controller: 'editProfileController',
+			controllerAs: 'model'
+		}).when("/user/:uid/trip/new", {
 			templateUrl: 'views/plan/templates/new-plan.view.client.html',
 			controller: 'newPlanController',
 			controllerAs: 'model'
-		}).when("/edit-plan-country", {
+		}).when("/user/:uid/trip/:tid/edit-plan-country", {
 			templateUrl: 'views/plan/templates/edit-plan-country.view.client.html',
 			controller: 'editPlanCountryController',
 			controllerAs: 'model'
-		}).when("/edit-plan-interest", {
+		}).when("/user/:uid/trip/:tid/edit-plan-interest", {
 			templateUrl: 'views/plan/templates/edit-plan-interest.view.client.html',
 			controller: 'editPlanInterestController',
 			controllerAs: 'model'
-		}).when("/edit-plan-route", {
+		}).when("/user/:uid/trip/:tid/edit-plan-route", {
 			templateUrl: 'views/plan/templates/edit-plan-route.view.client.html',
 			controller: 'editPlanRouteController',
 			controllerAs: 'model'
-		}).when("/edit-plan-lodging", {
+		}).when("/user/:uid/trip/:tid/edit-plan-lodging", {
 			templateUrl: 'views/plan/templates/edit-plan-lodging.view.client.html',
 			controller: 'editPlanLodgingController',
 			controllerAs: 'model'
-		}).when("/edit-plan-timeline", {
+		}).when("/user/:uid/trip/:tid/edit-plan-timeline", {
 			templateUrl: 'views/plan/templates/edit-plan-timeline.view.client.html',
 			controller: 'editPlanTimelineController',
 			controllerAs: 'model'
@@ -160,7 +172,15 @@ module.exports = angular;
 			templateUrl: 'views/trips/templates/trip-results.view.client.html',
 			controller: 'tripResultController',
 			controllerAs: 'model'
+		}).when("/user/:uid/trip-results", {
+			templateUrl: 'views/trips/templates/trip-results.view.client.html',
+			controller: 'tripResultController',
+			controllerAs: 'model'
 		}).when("/trip-review", {
+			templateUrl: 'views/trips/templates/trip-review.view.client.html',
+			controller: 'tripReviewController',
+			controllerAs: 'model'
+		}).when("/user/:uid/trip/:tid", {
 			templateUrl: 'views/trips/templates/trip-review.view.client.html',
 			controller: 'tripReviewController',
 			controllerAs: 'model'
@@ -190,8 +210,10 @@ module.exports = angular;
 	angular.module("appDirectives").directive("appHeader", appHeader);
 
 	function appHeader() {
-		function linkFunction() {
+		function linkFunction(scope, element) {
 			// TODO: lol fix yo life. And add some code.
+			var pageId = $('main .container').attr('id');
+			console.log(scope);
 		}
 
 		return {
@@ -266,54 +288,18 @@ module.exports = angular;
 
 
 (function () {
-    angular.module("TravelApp").factory("PlanService", PlanService);
+	angular.module("TravelApp").controller("globalController", globalController);
 
-    function PlanService($http) {
-
-        var api = {
-            "createPlan": createPlan,
-            "updatePlan": updatePlan,
-            "deletePlan": deletePlan,
-            "findPlanByUserId": findPlanByUserId,
-            "findPlanById": findPlanById
-        };
-        return api;
-
-        // adds the plan parameter instance to the local plans array. The new plan's userId is set to the userId parameter
-        function createPlan(userId, plan) {
-            return $http.post("/api/user/" + userId + "/plan", plan).then(function (response) {
-                return response.data;
-            });
-        }
-
-        // retrieves the plans in local plans array whose userId matches the parameter userId
-        function findPlanByUserId(userId) {
-            return $http.get("/api/user/" + userId + "/plan").then(function (response) {
-                return response.data;
-            });
-        }
-
-        // retrieves the plan in local plans array whose _id matches the planId parameter
-        function findPlanById(planId) {
-            return $http.get("/api/plan/" + planId).then(function (response) {
-                return response.data;
-            });
-        }
-
-        // updates the plan in local plans array whose _id matches the planId parameter
-        function updatePlan(planId, newPlan) {
-            return $http.put("/api/plan/" + planId, newplan).then(function (response) {
-                return response.data;
-            });
-        }
-
-        // removes the plan from local plans array whose _id matches the planId parameter
-        function deletePlan(planId) {
-            return $http.delete("/api/plan/" + planId).then(function (response) {
-                return response.data;
-            });
-        }
-    }
+	function globalController($scope, $routeParams) {
+		var toState = $routeParams.state;
+		console.log("Global loaded");
+		var vm = this;
+		$scope.$on('$stateChangeStart', function (event, toState, toParams) {
+			vm.bodyClass = toState.name + '-page';
+			console.log("worked" + toState);
+		});
+		console.log("maybe" + toState);
+	}
 })();
 
 /***/ }),
@@ -340,13 +326,15 @@ module.exports = angular;
 
         // adds the trip parameter instance to the local trips array. The new trip's userId is set to the userId parameter
         function createTrip(userId, trip) {
-            return $http.post("/api/user/" + userId + "/trip", trip).then(function (response) {
+            return $http.post("/api/user/" + userId + "/trip?blank=true", trip).then(function (response) {
                 return response.data;
             });
         }
 
         function createTripFromPlan(userId, planId) {
-            return $http.post("/api/user/" + userId + "/trip", planId);
+            return $http.post("/api/user/" + userId + "/trip", planId).then(function (response) {
+                return response.data;
+            });
         }
 
         // retrieves the trips in local trips array whose userId matches the parameter userId
@@ -418,6 +406,8 @@ module.exports = angular;
         function updateUser(userId, newUser) {
             return $http.put("/api/user/" + userId, newUser).then(function (response) {
                 return response.data;
+            }, function (err) {
+                return err.data;
             });
         }
 
@@ -442,7 +432,7 @@ module.exports = angular;
             });
         }
     }
-});
+})();
 
 /***/ }),
 /* 10 */
@@ -587,11 +577,41 @@ module.exports = angular;
 
 
 (function () {
-	angular.module("TravelApp").controller("loginController", loginController);
+    angular.module("TravelApp").controller("editProfileController", editProfileController);
 
-	function loginController($routeParams) {
-		var vm = this;
-	}
+    function editProfileController($routeParams, UserService, $location) {
+        var vm = this;
+        vm.userId = $routeParams["uid"];
+        vm.update = update;
+        vm.remove = remove;
+
+        function init() {
+            UserService.findUserById(vm.userId).then(function (user) {
+                vm.user = user;
+            });
+        }
+        init();
+
+        function update(newUser) {
+            UserService.updateUser(vm.userId, newUser).then(function (user) {
+                if (user == null) {
+                    vm.error = "unable to update user";
+                } else {
+                    vm.success = "user successfully updated";
+                    $location.url("/user/" + vm.userId);
+                }
+            });
+        };
+
+        function remove(user) {
+            UserService.deleteUser(vm.userId).then(function (user) {
+                $location.url("/login");
+            });
+        }
+
+        var user = UserService.findUserById(vm.userId);
+        vm.user = user;
+    }
 })();
 
 /***/ }),
@@ -602,11 +622,33 @@ module.exports = angular;
 
 
 (function () {
-	angular.module("TravelApp").controller("profileController", profileController);
+  angular.module("TravelApp").controller("loginController", loginController);
 
-	function profileController() {
-		var vm = this;
-	}
+  function loginController($location, UserService) {
+    var vm = this;
+    vm.login = login;
+
+    function isValidLogin(user) {
+      return !angular.isUndefined(user) && !angular.isUndefined(user.username) && !angular.isUndefined(user.password) && user.username != '' && user.password != '';
+    }
+
+    function login(user) {
+      if (isValidLogin(user)) {
+        UserService.findUserByCredentials(user.username, user.password).then(function (user) {
+          //returns the object that we get from the server
+          if (user.message) {
+            vm.error = 'User not found';
+          } else {
+            $location.url("/user/" + user._id);
+          }
+        }, function (err) {
+          vm.error = 'Something went horribly wrong...';
+        });
+      } else {
+        vm.error = 'Please fill out all fields';
+      }
+    }
+  }
 })();
 
 /***/ }),
@@ -617,24 +659,97 @@ module.exports = angular;
 
 
 (function () {
-	angular.module("TravelApp").controller("registerController", registerController);
+    angular.module("TravelApp").controller("profileController", profileController);
 
-	function registerController() {
-		var vm = this;
-	}
+    function profileController($routeParams, UserService, $location) {
+        var vm = this;
+        vm.userId = $routeParams["uid"];
+        vm.update = update;
+        vm.remove = remove;
+
+        function init() {
+            UserService.findUserById(vm.userId).then(function (user) {
+                vm.user = user;
+            });
+        }
+        init();
+
+        function update(newUser) {
+            UserService.updateUser(vm.userId, newUser).then(function (user) {
+                if (user == null) {
+                    vm.error = "unable to update user";
+                } else {
+                    vm.success = "user successfully updated";
+                }
+            });
+        };
+
+        function remove(user) {
+            UserService.deleteUser(vm.userId).then(function (user) {
+                $location.url("/login");
+            });
+        }
+
+        var user = UserService.findUserById(vm.userId);
+        vm.user = user;
+    }
 })();
 
 /***/ }),
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
+
+
+(function () {
+    angular.module("TravelApp").controller("registerController", registerController);
+
+    function registerController(UserService, $location) {
+        var vm = this;
+        vm.register = register;
+
+        function init() {
+            $('body').attr('class', 'bg--dirty-brown');
+        }
+        init();
+
+        function isValidRegistration(user) {
+            return !angular.isUndefined(user) && !angular.isUndefined(user.username) && !angular.isUndefined(user.password) && !angular.isUndefined(user.verify) && user.username != '' && user.password != '' && user.verify != '' && user.verify == user.password;
+        }
+
+        function register(user) {
+            if (isValidRegistration(user)) {
+                UserService.findUserByUsername(user.username).then(function (newUser) {
+                    if (newUser.message) {
+                        vm.error = 'Available';
+                        UserService.createUser(user).then(function (user) {
+                            $location.url("/user/" + user._id);
+                        });
+                    } else {
+                        vm.error = "That Username is taken";
+                    }
+                }, function (err) {
+                    vm.error = "Something went horribly wrong...";
+                });
+            } else {
+                vm.error = 'Please fill out all fields';
+            }
+        }
+    }
+})();
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(28);
+var content = __webpack_require__(29);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(32)(content, {});
+var update = __webpack_require__(33)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -651,7 +766,7 @@ if(false) {
 }
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports) {
 
 /**
@@ -1886,7 +2001,7 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports) {
 
 /**
@@ -35236,7 +35351,7 @@ $provide.value("$locale", {
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35250,26 +35365,22 @@ __webpack_require__(1);
 __webpack_require__(0);
 
 /* Stylesheets */
-__webpack_require__(22);
-
-/* Directives */
-__webpack_require__(4);
-__webpack_require__(5);
-__webpack_require__(6);
+__webpack_require__(23);
 
 /* Scripts */
 __webpack_require__(2);
 __webpack_require__(3);
 
 /* Services */
-__webpack_require__(7);
+// require('../public/services/plan.service.client.js');
 __webpack_require__(8);
 __webpack_require__(9);
 
 /* Controllers */
-__webpack_require__(19);
-__webpack_require__(21);
 __webpack_require__(20);
+__webpack_require__(22);
+__webpack_require__(21);
+__webpack_require__(19);
 __webpack_require__(17);
 __webpack_require__(18);
 __webpack_require__(16);
@@ -35279,9 +35390,15 @@ __webpack_require__(11);
 __webpack_require__(13);
 __webpack_require__(12);
 __webpack_require__(14);
+__webpack_require__(7);
+
+/* Directives */
+__webpack_require__(4);
+__webpack_require__(5);
+__webpack_require__(6);
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35402,7 +35519,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35416,9 +35533,9 @@ function fromByteArray (uint8) {
 
 
 
-var base64 = __webpack_require__(26)
-var ieee754 = __webpack_require__(30)
-var isArray = __webpack_require__(31)
+var base64 = __webpack_require__(27)
+var ieee754 = __webpack_require__(31)
+var isArray = __webpack_require__(32)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -37196,24 +37313,24 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(34)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(35)))
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(29)(undefined);
+exports = module.exports = __webpack_require__(30)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, "/* Variables */\n/* Colors */\n/* Components */\n.navbar .navbar-header {\n  position: relative; }\n  .navbar .navbar-header .navbar-brand {\n    color: #FFFFFF; }\n  .navbar .navbar-header .profile-icon {\n    position: absolute;\n    top: 50%;\n    transform: translate(0%, -50%);\n    vertical-align: middle;\n    right: 0;\n    color: #FFFFFF; }\n\n/* Pages */\n.search .bg-img {\n  position: fixed;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  vertical-align: middle;\n  z-index: -1; }\n\n.search .title {\n  color: white;\n  font-weight: bold;\n  text-align: center;\n  margin: 20px auto; }\n\n.login .bg-img {\n  position: fixed;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  vertical-align: middle;\n  z-index: -1; }\n\n.login h1 {\n  font-weight: bold;\n  color: #FFFFFF; }\n\n.profile .summary__img {\n  display: block;\n  width: 100%;\n  position: relative;\n  height: 100px;\n  overflow: hidden; }\n  .profile .summary__img img {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    vertical-align: middle; }\n\n.profile .past__last .trip {\n  display: block;\n  margin: 10px auto;\n  background-color: #FFFFFF;\n  width: 100%;\n  overflow: hidden; }\n  .profile .past__last .trip:first-child {\n    margin-top: 0; }\n  .profile .past__last .trip__img {\n    display: block;\n    width: 100%;\n    position: relative;\n    height: 100px;\n    overflow: hidden; }\n    .profile .past__last .trip__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n  .profile .past__last .trip__copy {\n    padding: 5px 15px 20px; }\n    .profile .past__last .trip__copy__countries {\n      display: block; }\n      .profile .past__last .trip__copy__countries__item {\n        display: inline-block;\n        margin: 5px; }\n        .profile .past__last .trip__copy__countries__item:first-child {\n          margin-left: 0; }\n    .profile .past__last .trip__copy__length {\n      display: inline-block; }\n    .profile .past__last .trip__copy__cost {\n      display: inline-block;\n      margin-left: 10px; }\n\n.trip-results .trip-list .trip {\n  display: block;\n  margin: 10px auto;\n  background-color: #FFFFFF; }\n  .trip-results .trip-list .trip:first-child {\n    margin-top: 0; }\n  .trip-results .trip-list .trip__img {\n    display: block;\n    width: 100%;\n    position: relative;\n    height: 100px;\n    overflow: hidden; }\n    .trip-results .trip-list .trip__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n  .trip-results .trip-list .trip__copy {\n    padding: 5px 15px 20px; }\n    .trip-results .trip-list .trip__copy__countries {\n      display: block; }\n      .trip-results .trip-list .trip__copy__countries__item {\n        display: inline-block;\n        margin: 5px; }\n        .trip-results .trip-list .trip__copy__countries__item:first-child {\n          margin-left: 0; }\n    .trip-results .trip-list .trip__copy__length {\n      display: inline-block; }\n    .trip-results .trip-list .trip__copy__cost {\n      display: inline-block;\n      margin-left: 10px; }\n\n.trip-review {\n  padding: 0; }\n  .trip-review .map {\n    width: 0;\n    height: 0; }\n  .trip-review .summary {\n    background-color: #E2DE9D;\n    display: block;\n    width: 100%;\n    padding: 15px; }\n    .trip-review .summary__title {\n      font-weight: bold;\n      color: #204F20; }\n    .trip-review .summary__countries {\n      display: block;\n      width: 100%; }\n      .trip-review .summary__countries__item {\n        display: inline-block;\n        margin: 10px; }\n        .trip-review .summary__countries__item:first-child {\n          margin-left: 0; }\n        .trip-review .summary__countries__item svg {\n          width: 0;\n          height: 0; }\n        .trip-review .summary__countries__item span {\n          color: #204F20;\n          font-weight: bold; }\n    .trip-review .summary__length {\n      display: inline-block;\n      color: #204F20;\n      font-weight: bold; }\n    .trip-review .summary__cities {\n      margin-left: 20px;\n      display: inline-block;\n      color: #204F20;\n      font-weight: bold; }\n    .trip-review .summary__pack {\n      margin-top: 20px; }\n    .trip-review .summary__cost {\n      width: 0;\n      height: 0; }\n  .trip-review .city {\n    position: relative;\n    color: #FFFFFF;\n    padding: 15px;\n    overflow: hidden; }\n    .trip-review .city__bg {\n      z-index: -1;\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n    .trip-review .city__arrival-date {\n      font-size: 12px; }\n    .trip-review .city__name {\n      font-weight: bold;\n      margin: 0; }\n    .trip-review .city__rating {\n      width: 0;\n      height: 0; }\n    .trip-review .city__activity__item {\n      width: 100%;\n      display: block;\n      background-color: #FFFFFF; }\n      .trip-review .city__activity__item .img-container {\n        position: relative;\n        height: 50px;\n        overflow: hidden; }\n        .trip-review .city__activity__item .img-container img {\n          position: absolute;\n          top: 50%;\n          left: 50%;\n          transform: translate(-50%, -50%);\n          vertical-align: middle; }\n      .trip-review .city__activity__item span {\n        color: black; }\n      .trip-review .city__activity__item svg {\n        width: 0;\n        height: 0; }\n    .trip-review .city__cost {\n      width: 0;\n      height: 0; }\n  .trip-review .travel {\n    padding: 15px; }\n    .trip-review .travel__icon {\n      width: 0;\n      height: 0; }\n    .trip-review .travel__airport {\n      display: block;\n      width: 100%;\n      margin-bottom: 20px; }\n      .trip-review .travel__airport p:first-child {\n        text-transform: uppercase;\n        color: #204F20;\n        margin: 0;\n        font-weight: bold; }\n      .trip-review .travel__airport h3 {\n        margin-top: 0;\n        font-weight: bold; }\n    .trip-review .travel__details p {\n      margin: 0; }\n    .trip-review .travel__length {\n      color: #204F20;\n      font-weight: bold; }\n\nbody {\n  background-color: #FFFFFF; }\n", ""]);
+exports.push([module.i, "/* Variables */\n/* Breakpoints */\n/* Colors */\n/* Components */\n.navbar .navbar-header {\n  position: relative; }\n  .navbar .navbar-header a {\n    color: white; }\n  .navbar .navbar-header .profile-icon {\n    position: absolute;\n    top: 50%;\n    transform: translate(0%, -50%);\n    vertical-align: middle;\n    right: 0; }\n  .navbar .navbar-header--green a {\n    color: #204F20; }\n\n@media only screen and (min-width: 768px) {\n  .navbar .navbar-header {\n    float: none; } }\n\n/* Pages */\n.search {\n  max-width: 450px;\n  margin: 80px auto; }\n  .search .title {\n    max-width: 290px;\n    color: white;\n    font-weight: bold;\n    text-align: center;\n    margin: 20px auto; }\n  @media only screen and (min-width: 768px) {\n    .search {\n      max-width: 700px; }\n      .search .title {\n        max-width: none; } }\n\n.login {\n  max-width: 560px; }\n  .login h1 {\n    font-weight: bold;\n    color: #FFFFFF; }\n  .login .panel {\n    padding: 15px 10px; }\n    .login .panel label {\n      color: #204F20; }\n    .login .panel .form-control {\n      margin-bottom: 20px; }\n\n.register {\n  color: #FFFFFF;\n  max-width: 450px; }\n  .register__title {\n    font-weight: bold;\n    text-align: center; }\n  .register input {\n    margin-bottom: 20px; }\n  .register a {\n    margin: 5px 20px; }\n\n.profile .summary {\n  background-color: #E2DE9D;\n  position: relative; }\n  .profile .summary__img {\n    display: inline-block;\n    position: relative;\n    height: 100px;\n    width: 100px;\n    overflow: hidden;\n    border-radius: 50%; }\n    .profile .summary__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n  .profile .summary__edit {\n    z-index: 1;\n    position: absolute;\n    right: 0;\n    background-color: #FFFFFF;\n    width: 25px;\n    border-bottom-left-radius: 10%;\n    padding: 2px 5px; }\n\n.profile .in-progress {\n  margin-top: 20px;\n  padding: 0px 15px 10px; }\n\n.profile .past__last .trip {\n  display: block;\n  margin: 10px auto;\n  background-color: #FFFFFF;\n  width: 100%;\n  overflow: hidden; }\n  .profile .past__last .trip:first-child {\n    margin-top: 0; }\n  .profile .past__last .trip__img {\n    display: block;\n    width: 100%;\n    position: relative;\n    height: 100px;\n    overflow: hidden; }\n    .profile .past__last .trip__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n  .profile .past__last .trip__copy {\n    padding: 5px 15px 20px; }\n    .profile .past__last .trip__copy__countries {\n      display: block; }\n      .profile .past__last .trip__copy__countries__item {\n        display: inline-block;\n        margin: 5px; }\n        .profile .past__last .trip__copy__countries__item:first-child {\n          margin-left: 0; }\n    .profile .past__last .trip__copy__length {\n      display: inline-block; }\n    .profile .past__last .trip__copy__cost {\n      display: inline-block;\n      margin-left: 10px; }\n\n.trip-results .trip-list .trip {\n  display: block;\n  margin: 10px auto;\n  background-color: #FFFFFF; }\n  .trip-results .trip-list .trip:first-child {\n    margin-top: 0; }\n  .trip-results .trip-list .trip__img {\n    display: block;\n    width: 100%;\n    position: relative;\n    height: 100px;\n    overflow: hidden; }\n    .trip-results .trip-list .trip__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n  .trip-results .trip-list .trip__copy {\n    padding: 5px 15px 20px; }\n    .trip-results .trip-list .trip__copy__countries {\n      display: block; }\n      .trip-results .trip-list .trip__copy__countries__item {\n        display: inline-block;\n        margin: 5px; }\n        .trip-results .trip-list .trip__copy__countries__item:first-child {\n          margin-left: 0; }\n    .trip-results .trip-list .trip__copy__length {\n      display: inline-block; }\n    .trip-results .trip-list .trip__copy__cost {\n      display: inline-block;\n      margin-left: 10px; }\n\n.trip-review {\n  padding: 0; }\n  .trip-review .map {\n    width: 0;\n    height: 0; }\n  .trip-review .summary {\n    background-color: #E2DE9D;\n    display: block;\n    width: 100%;\n    padding: 15px; }\n    .trip-review .summary__title {\n      font-weight: bold;\n      color: #204F20; }\n    .trip-review .summary__countries {\n      display: block;\n      width: 100%; }\n      .trip-review .summary__countries__item {\n        display: inline-block;\n        margin: 10px; }\n        .trip-review .summary__countries__item:first-child {\n          margin-left: 0; }\n        .trip-review .summary__countries__item svg {\n          width: 0;\n          height: 0; }\n        .trip-review .summary__countries__item span {\n          color: #204F20;\n          font-weight: bold; }\n    .trip-review .summary__length {\n      display: inline-block;\n      color: #204F20;\n      font-weight: bold; }\n    .trip-review .summary__cities {\n      margin-left: 20px;\n      display: inline-block;\n      color: #204F20;\n      font-weight: bold; }\n    .trip-review .summary__pack {\n      margin-top: 20px; }\n    .trip-review .summary__cost {\n      width: 0;\n      height: 0; }\n  .trip-review .city {\n    position: relative;\n    color: #FFFFFF;\n    padding: 15px;\n    overflow: hidden; }\n    .trip-review .city__bg {\n      z-index: -1;\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n    .trip-review .city__arrival-date {\n      font-size: 12px; }\n    .trip-review .city__name {\n      font-weight: bold;\n      margin: 0; }\n    .trip-review .city__rating {\n      width: 0;\n      height: 0; }\n    .trip-review .city__activity__item {\n      width: 100%;\n      display: block;\n      background-color: #FFFFFF; }\n      .trip-review .city__activity__item .img-container {\n        position: relative;\n        height: 50px;\n        overflow: hidden; }\n        .trip-review .city__activity__item .img-container img {\n          position: absolute;\n          top: 50%;\n          left: 50%;\n          transform: translate(-50%, -50%);\n          vertical-align: middle; }\n      .trip-review .city__activity__item span {\n        color: black; }\n      .trip-review .city__activity__item svg {\n        width: 0;\n        height: 0; }\n    .trip-review .city__cost {\n      width: 0;\n      height: 0; }\n  .trip-review .travel {\n    padding: 15px; }\n    .trip-review .travel__icon {\n      width: 0;\n      height: 0; }\n    .trip-review .travel__airport {\n      display: block;\n      width: 100%;\n      margin-bottom: 20px; }\n      .trip-review .travel__airport p:first-child {\n        text-transform: uppercase;\n        color: #204F20;\n        margin: 0;\n        font-weight: bold; }\n      .trip-review .travel__airport h3 {\n        margin-top: 0;\n        font-weight: bold; }\n    .trip-review .travel__details p {\n      margin: 0; }\n    .trip-review .travel__length {\n      color: #204F20;\n      font-weight: bold; }\n\nbody.bg--white {\n  background-color: #FFFFFF; }\n\nbody.bg--dirty-brown {\n  background-color: #E2DE9D; }\n\nbody .bg-img {\n  z-index: -1;\n  filter: blur(3px) brightness(0.7);\n  position: fixed;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  vertical-align: middle; }\n\nbody .btn-primary {\n  border-color: #6E9E75;\n  background-color: #6E9E75; }\n  body .btn-primary:hover {\n    border-color: #638E69;\n    background-color: #638E69; }\n\nbody .btn-success {\n  border-color: #204F20;\n  background-color: #204F20; }\n  body .btn-success:hover {\n    border-color: #123812;\n    background-color: #123812; }\n\nbody .link-primary {\n  color: #204F20; }\n  body .link-primary:hover {\n    color: #123812; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {/*
@@ -37292,10 +37409,10 @@ function toComment(sourceMap) {
   return '/*# ' + data + ' */';
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(27).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(28).Buffer))
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -37385,7 +37502,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -37396,7 +37513,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -37433,7 +37550,7 @@ var stylesInDom = {},
 	singletonElement = null,
 	singletonCounter = 0,
 	styleElementsInsertedAtTop = [],
-	fixUrls = __webpack_require__(33);
+	fixUrls = __webpack_require__(34);
 
 module.exports = function(list, options) {
 	if(typeof DEBUG !== "undefined" && DEBUG) {
@@ -37692,7 +37809,7 @@ function updateLink(linkElement, options, obj) {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports) {
 
 
@@ -37787,7 +37904,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports) {
 
 var g;

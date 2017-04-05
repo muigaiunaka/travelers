@@ -1,9 +1,9 @@
 (function() {
 	angular
 		.module("TravelApp")
-		.controller("profileController", profileController);
+		.controller("editProfileController", editProfileController);
 
-	function profileController($routeParams, UserService, $location) {
+	function editProfileController($routeParams, UserService, $location) {
 		var vm = this;
     	vm.userId = $routeParams["uid"];
         vm.update = update;
@@ -20,14 +20,15 @@
 
         function update(newUser) {
             UserService
-            .updateUser(vm.userId, newUser)
-            .then(function(user) {
-                if(user == null) {
-                    vm.error = "unable to update user";
-                } else {
-                    vm.success = "user successfully updated"
-                }
-            });
+                .updateUser(vm.userId, newUser)
+                .then(function(user) {
+                    if(user == null) {
+                        vm.error = "unable to update user";
+                    } else {
+                        vm.success = "user successfully updated"
+                        $location.url("/user/"+vm.userId);
+                    }
+                });
         };
 
         function remove(user) {

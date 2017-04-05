@@ -1,13 +1,16 @@
 .search {
-	.bg-img {
-		@include posCenter(fixed, 50%, 50%);
-		z-index: -1;
-	}
-
+	max-width: 450px;
+	margin: 80px auto;
 	.title {
+		max-width: 290px;
 		color: white;
 		font-weight: bold;
 		text-align: center;
 		margin: 20px auto;
+	}
+
+	@include respond-to($tablet) {
+		max-width: 700px;
+		.title { max-width: none; }
 	}
 }

@@ -1,10 +1,16 @@
 .login {
-	.bg-img {
-		@include posCenter(fixed, 50%, 50%);
-		z-index: -1;
-	}
+	max-width: 560px;
 	h1 {
 		font-weight: bold;
 		color: $white;
+	}
+
+	.panel {
+		padding: 15px 10px;
+		label { color: $drkGreen; }
+		.form-control { margin-bottom: 20px; }
+	}
+
+	@include respond-to($tablet) {
 	}
 }

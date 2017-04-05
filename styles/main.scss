@@ -19,5 +19,35 @@
 @import "pages/edit-plan-timeline";
 
 body {
-	background-color: $white;
+	&.bg {
+		&--white { background-color: $white; }
+		&--dirty-brown { background-color: $dirtyBrown; }
+	}
+	.bg-img {
+		z-index: -1;
+		filter: blur(3px) brightness(0.7);
+		@include posCenter(fixed, 50%, 50%);
+	}
+	.btn-primary {
+		border-color: $paleGreen;
+		background-color: $paleGreen;
+		&:hover {
+			border-color: $drkPaleGrn;
+			background-color: $drkPaleGrn;
+		}
+	}
+	.btn-success {
+		border-color: $drkGreen;
+		background-color: $drkGreen;
+		&:hover {
+			border-color: $drkerGrn;
+			background-color: $drkerGrn;
+		}
+	}
+	.link-primary {
+		color: $drkGreen;
+		&:hover {
+			color: $drkerGrn;
+		}
+	}
 }

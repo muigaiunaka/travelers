@@ -1,11 +1,16 @@
 .navbar {
 	.navbar-header {
 		position: relative;
-		.navbar-brand { color: $white; }
+		a { color: white; }
 		.profile-icon {
 			@include posCenter(absolute, 50%, 0%);
 			right: 0;
-			color: $white;
 		}
+		&--green {
+			a { color: $drkGreen; }
+		}
+	}
+	@include respond-to($tablet) {
+		.navbar-header { float: none; }
 	}
 }

@@ -1,0 +1,30 @@
+<section class="container edit-profile" id="editProfile">
+	<form>
+		<label for="email">email</label>
+		<input ng-model="model.user.email"
+			   name="email"
+			   id="email"
+			   placeholder="globetrotter@email.com"
+			   type="email"
+			   class="form-control" />
+
+		<label for="home">Hometown</label>
+		<input ng-model="model.user.hometown"
+			   name="home"
+			   id="home"
+			   placeholder="San Francisco, California"
+			   type="text"
+			   class="form-control" />
+
+		<label for="gender">Gender</label>
+		<input ng-model="model.user.gender"
+			   name="gender"
+			   id="gender"
+			   placeholder="e.g Female"
+			   type="text"
+			   class="form-control" />
+	</form>
+	<button ng-click="model.update(model.user)" class="btn btn-primary btn-block">Save</button>
+	<a href="#!/user/{{model.userId}}" class="btn btn-success btn-block">Cancel</a>
+	<button ng-click="model.remove(model.user)" class="btn btn-danger btn-block">Delete Account</button>
+</section>

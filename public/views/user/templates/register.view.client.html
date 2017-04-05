@@ -1,19 +1,24 @@
-<section class="container register">
+<section class="container register" id="register">
 	<h2 class="register__title">Welcome, Traveler!</h2>
 	<p class="register__copy">
 		So you're ready to start planning awesome adventures together?  
 		Great!  Let’s start by entering your email and creating a password.
 	</p>
-	<form>
-		<label for="email">email</label>
-		<input ng-model="user.email" 
-        	   name="email" 
-        	   id="email" 
-        	   type="email" 
-        	   placeholder="email" 
+
+    <div ng-show="model.error" class="alert alert-danger" role="alert">
+        {{model.error}}
+    </div>
+
+    <form>
+    	<label for="username">username</label>
+    	<input ng-model="user.username" 
+        	   name="username" 
+        	   id="username" 
+        	   type="text" 
+        	   placeholder="username" 
         	   class="form-control" />
 
-		<label for="password">password</label>
+    	<label for="password">password</label>
         <input ng-model="user.password" 
         	   name="password" 
         	   id="password" 
@@ -21,7 +26,7 @@
         	   placeholder="password" 
         	   class="form-control" />
 
-		<label for="verify">verify password</label>
+    	<label for="verify">verify password</label>
         <input ng-model="user.verify" 
         	   name="verify" 
         	   id="verify" 
@@ -29,7 +34,7 @@
         	   placeholder="verify password" 
         	   class="form-control" />
 
-        <button type="submit" class="btn btn-primary btn-block">Login</button>
-        <button type="submit" class="btn btn-success btn-block">Register</button>
+        <button ng-click="model.register(user)" type="submit" class="btn btn-primary pull-right">Register</button>
+        <a href="#!/login" class="link-primary pull-right">Cancel</button>
 	</form>
 </section>

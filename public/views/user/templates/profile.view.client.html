@@ -1,20 +1,28 @@
-<div class="container profile">
-	<section class="summary">
-		<div class="summary__img">
+<div class="container profile" id="profile">
+	<section class="summary clearfix">
+		<div class="summary__edit">
+            <a href="#!/user/{{model.userId}}/edit">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </a>
+        </div>
+		<div class="summary__img col-xs-4">
 			<img src="../../../imgs/bamboo.jpg">
 		</div>
-		<p class="summary__name">Walopee</p>
-		<p class="summary__num-of-trips">Walopee</p>
-		<p class="summary__gender">Walopee</p>
-		<p class="summary__loc">Walopee</p>
+		<div class="summary__copy col-xs-7">
+			<p class="summary__copy__name">{{model.user.username}}</p>
+			<p class="summary__copy__num-of-trips">{{model.user.trips.length}} trips</p>
+			<p class="summary__copy__gender">{{model.user.gender}}</p>
+			<p class="summary__copy__loc">{{model.user.hometown}}</p>
+		</div>
 	</section>
 
-	<section class="in-progress">
+	<section class="in-progress panel panel-default">
 		<h3 class="in-progress__title">Trip in Progress</h3>
 		<p class="in-progress__latest">
 			Latest: <span>Tokyo, Japan</span>
 		</p>
 		<p class="in-progress__cost">$2,124</p>
+		<button class="btn btn-primary btn-block">Start a Trip!</button>
 	</section>
 
 	<section class="upcoming">
@@ -42,7 +50,8 @@
 	</section>
 
 	<section class="planning">
-		<h3 class="planning__title">Upcoming Trips</h3>
+		<h3 class="planning__title">Trips in Planning</h3>
+		<a href="#!/user/{{model.user.userId}}/trip/new" class="btn btn-primary btn-block">Plan a new trip!</a>
 		<ul class="planning__plans list-unstyled">
 			<li class="planning__plans__item">
 				<ul class="menu list-unstyled">

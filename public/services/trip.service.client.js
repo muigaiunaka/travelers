@@ -17,14 +17,17 @@
 
         // adds the trip parameter instance to the local trips array. The new trip's userId is set to the userId parameter
         function createTrip(userId, trip) {
-            return $http.post("/api/user/"+userId+"/trip", trip)
+            return $http.post("/api/user/"+userId+"/trip?blank=true", trip)
                 .then(function (response) {
                     return response.data;
                 });
         }
 
         function createTripFromPlan(userId, planId) {
-            return $http.post("/api/user/"+userId+"/trip", planId);
+            return $http.post("/api/user/"+userId+"/trip", planId)
+                .then(function (response) {
+                    return response.data;
+                });
         }
 
         // retrieves the trips in local trips array whose userId matches the parameter userId

@@ -1,21 +1,38 @@
 .profile {
 	.summary {
+		background-color: $dirtyBrown;
+		position: relative;
 		&__img {
-			display: block;
-			width: 100%;
+			display: inline-block;
 			position: relative;
 			height: 100px;
+			width: 100px;
 			overflow: hidden;
+			border-radius: 50%;
 			img {
 				@include posCenter(absolute, 50%, 50%);
 			}
 		}
-		&__name {}
-		&__num-of-trips {}
-		&__gender {}
-		&__loc {}
+		&__copy {
+			&__name {}
+			&__num-of-trips {}
+			&__gender {}
+			&__loc {}
+		}
+		&__edit {
+			z-index: 1;
+			position: absolute;
+			right: 0;
+			background-color: $white;
+			width: 25px;
+			border-bottom-left-radius: 10%;
+			padding: 2px 5px;
+
+		}
 	}
 	.in-progress {
+		margin-top: 20px;
+		padding: 0px 15px 10px;
 		&__title {}
 		&__latest {}
 		&__cost {}

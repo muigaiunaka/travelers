@@ -35,6 +35,8 @@
             return $http.put("/api/user/"+userId, newUser)
                 .then(function (response) {
                     return response.data;
+                }, function(err) {
+                    return err.data;
                 });
         }
 
@@ -62,4 +64,4 @@
                 });
         }
 	}
-})
+})();
