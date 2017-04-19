@@ -9,7 +9,7 @@ if(process.env.MLAB_USERNAME) {
 }
 
 var mongoose = require("mongoose");
-mongoose.createConnection(connectionString);
+mongoose.connect(connectionString);
 
 // install, load, and configure body parser module
 var bodyParser = require('body-parser');
