@@ -9,6 +9,7 @@ if(process.env.MLAB_USERNAME) {
 }
 
 var mongoose = require("mongoose");
+console.log(process.env.MLAB_USERNAME);
 console.log(connectionString);
 mongoose.createConnection(connectionString);
 
