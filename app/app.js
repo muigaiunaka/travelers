@@ -1,14 +1,5 @@
 module.exports = function(app) {
 
-    var connectionString = 'mongodb://127.0.0.1:27017/globetrotter';
-
-    if(process.env.MLAB_USERNAME) {
-        connectionString = process.env.MONGODB_URI
-    }
-
-    var mongoose = require("mongoose");
-    mongoose.createConnection(connectionString);
-
 
 	var model = require('./models/model.server.js')();
 
