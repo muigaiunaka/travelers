@@ -1,17 +1,23 @@
 <section class="container new-plan" id="newPlan">
-	<h1>What would you like to name your trip?</h1>
+  <div class="bg"></div>
+	<h1>Title your Adventure!</h1>
+
+  <div ng-show="model.error" class="alert alert-danger" role="alert">
+      {{model.error}}
+  </div>
 	<form>
         <div class="input-group">
-            <input ng-model="trip.title" 
+            <input ng-model="trip.name" 
                    name="title" 
                    id="title" 
                    type="text" 
-                   placeholder="An Awesome Ttile" 
+                   placeholder="An Awesome Title" 
                    class="form-control" />
 
             <span class="input-group-btn">
-                <button type="submit" class="btn btn-success">Name it!</button>
+                <button ng-click="model.create(trip)" type="submit" class="btn btn-success">Name it!</button>
             </span>
         </div>
+        <a href="#!/user/{{model.userId}}" class="link-primary">Cancel</a>
 	</form>
 </section>

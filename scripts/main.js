@@ -16,6 +16,10 @@ require ('../public/config.js');
 // require('../public/services/plan.service.client.js');
 require ('../public/services/trip.service.client.js');
 require ('../public/services/user.service.client.js');
+require ('../public/services/restcountry.service.client.js');
+require ('../public/services/google.service.client.js');
+// require ('../public/services/route.service.client.js');
+// require ('../public/services/timeline.service.client.js');
 
 /* Controllers */
 require('../public/views/user/controllers/login.controller.client.js');
@@ -31,9 +35,11 @@ require('../public/views/plan/controllers/edit-plan-interest.controller.client.j
 require('../public/views/plan/controllers/edit-plan-route.controller.client.js');
 require('../public/views/plan/controllers/edit-plan-lodging.controller.client.js');
 require('../public/views/plan/controllers/edit-plan-timeline.controller.client.js');
-require('../public/global.controller.client.js');
 
 /* Directives */
 require('../public/directives/js/appDirectives.js');
 require('../public/directives/js/appHeader.js');
 require('../public/directives/js/jgaSearchAutocomplete.js');
+require('../public/directives/js/jgaSelectable.js');
+require('../public/directives/js/gpAuto.js');
+require('../public/directives/js/gpAutoMap.js');

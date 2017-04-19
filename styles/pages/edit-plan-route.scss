@@ -1,3 +1,55 @@
 .edit-plan-route {
-	
+	.route {
+		&__item {
+			position: relative;
+			padding: 0px 0px 20px 15px;
+			margin-left: 5px;
+			border-left: 1px solid black;
+			.input-group {
+				#from { display: none; }
+				#to { display: table-cell; }
+			}
+			&__dir { padding-top: 20px; }
+			&__add {
+				position: absolute;
+				top: 0px;
+				left: -8px;
+				padding: 0;
+				margin: 0;
+				background-color: $white;
+				height: 17px;
+			}&__remove {
+				position: absolute;
+				top: 17px;
+				left: -8px;
+				padding: 0;
+				margin: 0;
+				background-color: $white;
+				height: 17px;
+			}
+			&:first-child {
+				.input-group {
+					#from { display: table-cell; }
+					#to { display: none; }
+				}
+				.route__item__add {
+					top: 8px;
+				}
+				.route__item__remove {
+					display: none;
+				}
+			}
+			&:last-child {
+				padding-bottom: 0px;
+				margin-bottom: 30px;
+				.route__item__dir {
+					padding: 0px;
+				}
+			}
+		}
+	}
+    #map {
+    	height: 400px;
+    	width: 100%;
+    }
 }

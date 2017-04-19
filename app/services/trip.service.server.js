@@ -1,9 +1,9 @@
 module.exports = function(app, model) {
     app.post("/api/user/:uid/trip", createTrip);
     app.get("/api/user/:uid/trip", findTripsByUser);
-    app.get("/api/trip/:tip", findTripById);
-    app.put("/api/trip/:tip", updateTrip);
-    app.delete("/api/trip/:tip", deleteTrip);
+    app.get("/api/trip/:tid", findTripById);
+    app.put("/api/trip/:tid", updateTrip);
+    app.delete("/api/trip/:tid", deleteTrip);
 
     var tripModel = model.tripModel;
 
@@ -54,7 +54,7 @@ module.exports = function(app, model) {
 	}
 
 	function findTripById(req, res) {
-		var tripId = req.params.tip;
+		var tripId = req.params.tid;
 
 		tripModel
 			.findTripById(tripId)
@@ -66,20 +66,20 @@ module.exports = function(app, model) {
 	}
 
 	function updateTrip(req, res) {
-		var tripId = req.params.tip;
+		var tripId = req.params.tid;
 		var newTrip = req.body;
 
 		tripModel
 			.updateTrip(tripId, newTrip)
-			.then(function(p) {
-				res.send(p);
+			.then(function(t) {
+				res.send(t);
 			}, function(err) {
 				res.sendStatus(500).send(err);
 			});
 	}
 
 	function deleteTrip(req, res) {
-		var tripId = req.params.tip;
+		var tripId = req.params.tid;
 
 		tripModel
 			.deleteTrip(tripId)

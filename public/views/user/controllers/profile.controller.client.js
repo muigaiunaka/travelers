@@ -3,17 +3,25 @@
 		.module("TravelApp")
 		.controller("profileController", profileController);
 
-	function profileController($routeParams, UserService, $location) {
+	function profileController($routeParams, UserService, TripService, $location) {
 		var vm = this;
     	vm.userId = $routeParams["uid"];
         vm.update = update;
         vm.remove = remove;
+        vm.deleteTrip = deleteTrip;
 
 		function init() {
+            $('body')
+                .removeAttr('class');
 			UserService
                 .findUserById(vm.userId)
                 .then(function(user) {
                     vm.user = user;
+                    TripService
+                        .findTripByUserId(vm.userId)
+                        .then(function(trips) {
+                            vm.trips = trips;
+                        });
                 });
 		}
 		init();
@@ -36,6 +44,18 @@
                 .then(function(user) {
                     $location.url("/login");
                 });
+        }
+
+        function deleteTrip(tripId) {
+            TripService
+                .deleteTrip(tripId)
+                .then(function(response) {
+                    TripService
+                        .findTripByUserId(vm.userId)
+                        .then(function(trips) {
+                            vm.trips = trips;
+                        });
+                })
         }
 
         var user = UserService.findUserById(vm.userId);

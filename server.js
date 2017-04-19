@@ -1,3 +1,4 @@
+// var env = require('node-env-file');
 var express = require('express');
 var app = express();
 
@@ -23,7 +24,6 @@ app.use(bodyParser.json({limit:'50mb'}));
 
 // configure a public directory to host static content
 app.use(express.static(__dirname + '/public'));
-
 require ("./app/app.js")(app);
 // require ("./assignment/app.js")(app); //executes the function in server app
 

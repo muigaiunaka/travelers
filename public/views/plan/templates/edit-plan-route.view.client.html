@@ -1,22 +1,28 @@
-<section class="container edit-plan-route" id="editPlanRoute">
+<section class="container edit-plan-route" id="editPlanRoute" ng-switch='model.trip.route.status'>
 
     <h1 class="title">Choose or search for cities</h1>
-
     <form>
-        <div class="input-group">
-            <div jga-search-auto class="ui-widget">
+      <ul class="route list-unstyled">
+        <li class="route__item" ng-repeat="route in model.trip.route.list" id="{{route.id}}">
+          <button ng-click="model.addWaypoint($event)" class="btn btn-link route__item__add"><span class="glyphicon glyphicon-plus-sign"></span></button>
+          <button ng-click="model.removeWaypoint($event)" class="btn btn-link route__item__remove"><span class="glyphicon glyphicon-minus-sign"></span></button>
+          <div class="input-group">
+            <span class="input-group-addon" id="from">From</span>
+            <span class="input-group-addon" id="to">To</span>
+            <input gp-auto-map model='model' ng-model="user.username" 
+                       name="search" 
+                       id="search" 
+                       type="text" 
+                       placeholder="Search" 
+                       class="form-control" />
+          </div>
+          <div class="route__item__dir">{{route.duration}}</div>
 
-            <input ng-model="user.username" 
-                   name="search" 
-                   id="search" 
-                   type="text" 
-                   placeholder="Search" 
-                   class="form-control" />
-            </div>
-
-            <span class="input-group-btn">
-                <button type="submit" class="btn btn-success">Add</button>
-            </span>
-        </div>
+        </li>
+      </ul>
     </form>
+    <div id="map"></div>
+    <button ng-switch-default ng-click="model.final()" class="btn btn-success btn-block">Done!</button>
+    <button ng-switch-when='COMPLETE' ng-click="model.revert()" class="btn btn-success btn-block">Edit</button>
+    <a href="#!/user/{{model.userId}}/trip/{{model.tripId}}/edit-plan-timeline" class="btn btn-primary btn-block">Next</a>
 </section>

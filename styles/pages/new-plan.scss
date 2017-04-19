@@ -1,3 +1,7 @@
 .new-plan {
-	
+	.bg { @include bgColor($ltePaleGrn); }
+	h1 {
+		color: $drkGreen;
+		font-weight: bold;
+	}
 }

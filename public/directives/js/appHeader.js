@@ -7,7 +7,6 @@
 		function linkFunction(scope, element) {
 			// TODO: lol fix yo life. And add some code.
 			var pageId = $('main .container').attr('id');
-			console.log(scope);
 		}
 
 		return {

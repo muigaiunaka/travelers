@@ -14,7 +14,7 @@ module.exports = function(model) {
 	}
 	// userModel.setModel(model);
 	// planModel.setModel(model);
-	// tripModel.setModel(model);
+	tripModel.setModel(model);
 	return model;
 
 };

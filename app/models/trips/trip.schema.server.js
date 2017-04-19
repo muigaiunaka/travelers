@@ -2,13 +2,61 @@ module.exports = function () {
     var mongoose = require('mongoose');
     var tripSchema = mongoose.Schema({
 		_user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-		state: {type: String, enum: ['PLANNING', 'UPCOMING', 'INPROGRESS', 'COMPLETE']},
+		state: {
+			type: String, 
+			enum: ['PLANNING', 'UPCOMING', 'INPROGRESS', 'COMPLETE'],
+			default: 'PLANNING'
+		},
 		name: String,
-		countries: [String],
-		cities: [String],
-		route: [{type: mongoose.Schema.Types.ObjectId, ref: 'Route'}],
-		lodging: [String],
-		timeline: [{type: mongoose.Schema.Types.ObjectId, ref: 'Timeline'}],
+		countries: {
+			list: [{
+				name: String,
+				cities: [String]
+			}], 
+			status: {
+				type: String, 
+				enum: ['INPROGRESS', 'COMPLETE'],
+				default: 'INPROGRESS'
+			}
+		},
+		interests: {
+			list: [{}], 
+			status: {
+				type: String, 
+				enum: ['INPROGRESS', 'COMPLETE'],
+				default: 'INPROGRESS'
+			}
+		},
+		route: {
+			list: [{}],
+			status: {
+				type: String, 
+				enum: ['INPROGRESS', 'COMPLETE'],
+				default: 'INPROGRESS'
+			}
+
+		},
+		lodging: {
+			list: [String], 
+			status: {
+				type: String, 
+				enum: ['INPROGRESS', 'COMPLETE'],
+				default: 'INPROGRESS'
+			}
+		},
+		timeline: {
+			list: [{
+				_parent: {type: mongoose.Schema.Types.ObjectId, ref: 'Trip'},
+				arrival: Date,
+				order: Number,
+				city: String
+			}], 
+			status: {
+				type: String, 
+				enum: ['INPROGRESS', 'COMPLETE'],
+				default: 'INPROGRESS'
+			}
+		},
 		start: Date,
 		end: Date,
 		cost: Number,

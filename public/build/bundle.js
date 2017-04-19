@@ -63,14 +63,14 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 26);
+/******/ 	return __webpack_require__(__webpack_require__.s = 31);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(24);
+__webpack_require__(29);
 module.exports = 'ngRoute';
 
 
@@ -78,7 +78,7 @@ module.exports = 'ngRoute';
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(25);
+__webpack_require__(30);
 module.exports = angular;
 
 
@@ -213,7 +213,6 @@ module.exports = angular;
 		function linkFunction(scope, element) {
 			// TODO: lol fix yo life. And add some code.
 			var pageId = $('main .container').attr('id');
-			console.log(scope);
 		}
 
 		return {
@@ -232,12 +231,191 @@ module.exports = angular;
 
 
 (function () {
+    angular.module("appDirectives").directive("gpAuto", gpAuto);
+
+    function gpAuto() {
+        function linkFunction(scope, element, attrs, model) {
+            var options = {
+                types: ['(regions)'],
+                componentRestrictions: { 'country': [] }
+            };
+            scope.gPlace = new google.maps.places.Autocomplete(element[0], options);
+
+            google.maps.event.addListener(scope.gPlace, 'place_changed', function () {
+                scope.$apply(function () {
+                    // model.$setViewValue(element.val());                
+                });
+            });
+        }
+        return {
+            required: 'ngModel',
+            scope: {
+                type: '=',
+                model: '='
+            },
+            link: linkFunction
+        };
+    }
+})();
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+    angular.module("appDirectives").directive("gpAutoMap", gpAutoMap);
+
+    function gpAutoMap($routeParams, TripService) {
+        var userId = $routeParams.uid;
+        var tripId = $routeParams.tid;
+        function linkFunction(scope, element, attrs, model) {
+            var id = 0;
+            var options = {
+                types: ['(cities)'],
+                componentRestrictions: { 'country': [] }
+            };
+
+            // clears routes and markers from current map
+            function clearMap() {
+                function setMapNull(array) {
+                    for (var i = 0; i < array.length; i++) {
+                        array[i].setMap(null);
+                    }
+                }
+                setMapNull(scope.model.markers);
+                setMapNull(scope.model.dirDisplay);
+                scope.model.markers = [];
+                scope.model.dirDisplay = [];
+            }
+            scope.gPlace = new google.maps.places.Autocomplete(element[0], options);
+
+            google.maps.event.addListener(scope.gPlace, 'place_changed', function () {
+
+                /* TODO: FIX THIS.  pretty inefficient to redraw the map every time */
+
+                clearMap();
+
+                /* *** Draw Updated Map **** */
+
+                var interests = scope.model.trip.interests.list;
+                var places = scope.model.routes;
+                var count = $('ul.route').children('li').length;
+                var bounds = new google.maps.LatLngBounds();
+                var index;
+
+                // get position for newly added input
+                index = parseInt($(element).parents('li.route__item').attr('id'));
+
+                if (scope.model.trip.route.list[index] != null) {
+
+                    // get place details for new input value
+                    scope.model.routes[index].place = scope.gPlace.getPlace();
+                }
+
+                // Draw markers for interests
+                for (var i = 0; i < interests.length; i++) {
+                    var marker = new google.maps.Marker({
+                        map: scope.model.map,
+                        position: interests[i].geometry.location
+                    });
+                    var pinIcon = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FFFF00", null, null, null, new google.maps.Size(10, 20));
+                    marker.setIcon(pinIcon);
+                    bounds.extend(interests[i].geometry.location);
+                    scope.model.markers.push(marker);
+                }
+
+                // Draw markers for places
+                for (var i = 0; i < places.length; i++) {
+                    var marker = new google.maps.Marker({
+                        map: scope.model.map,
+                        position: places[i].place.geometry.location
+                    });
+                    bounds.extend(places[i].place.geometry.location);
+                    scope.model.markers.push(marker);
+                }
+                scope.model.map.fitBounds(bounds);
+
+                function renderDirections(result, index) {
+                    var directionsRenderer = new google.maps.DirectionsRenderer();
+                    directionsRenderer.setMap(scope.model.map);
+                    directionsRenderer.setDirections(result);
+                    scope.model.dirDisplay.push(directionsRenderer);
+                    var duration = directionsRenderer.directions.routes[0].legs[0].duration.text;
+                    var temp = '#' + index;
+                    $(temp).find('.route__item__dir').html(duration);
+                }
+
+                var directionsService = new google.maps.DirectionsService();
+                function requestDirections(start, end, index) {
+                    directionsService.route({
+                        origin: start,
+                        destination: end,
+                        travelMode: google.maps.DirectionsTravelMode.DRIVING // TRANSIT
+                    }, function (result) {
+                        renderDirections(result, index);
+                    });
+                }
+                for (var i = 0; i < places.length; i++) {
+                    if (i + 1 != places.length) {
+                        requestDirections(places[i].place.geometry.location, places[i + 1].place.geometry.location, i);
+                    }
+                }
+                TripService.updateTrip(tripId, scope.model.trip).then(function (status) {});
+                // scope.model.updateMap(element);
+                // scope.$apply(function() {
+                //     // model.$setViewValue(element.val());                
+                // });
+            });
+            scope.model.gPlace = scope.gPlace;
+        }
+        return {
+            required: 'ngModel',
+            scope: {
+                type: '=',
+                model: '='
+            },
+            link: linkFunction
+        };
+    }
+})();
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
 	angular.module("appDirectives").directive("jgaSearchAuto", jgaSearchAuto);
 
-	function jgaSearchAuto() {
+	function jgaSearchAuto($routeParams, RESTcountry, TripService) {
 		function linkFunction(scope, element) {
-
-			var availableTags = ["Japan", "South Korea", "Thailand"];
+			var userId = $routeParams.uid;
+			var tripId = $routeParams.tid;
+			var availableTags = [];
+			var selectedTerms = ["hello"];
+			var fillInput = false;
+			var el;
+			switch ($(element).attr('id')) {
+				case "selectedCities":
+					el = $(element).find('#dest');
+					fillInput = true;
+					availableTags = scope.model.destinations;
+					break;
+				default:
+					el = $('#search');
+					fillInput = false;
+					RESTcountry.getAll().then(function (response) {
+						var temp = response.data;
+						for (var c in temp) {
+							availableTags.push(temp[c].name);
+						}
+					});
+			}
 
 			function split(val) {
 				return val.split(/,\s*/);
@@ -246,7 +424,7 @@ module.exports = angular;
 				return split(term).pop();
 			}
 
-			$('#search').on("keydown", function (event) {
+			$(el).on("keydown", function (event) {
 				if (event.keyCode === $.ui.keyCode.TAB && $(this).autocomplete("instance").menu.active) {
 					event.preventDefault();
 				}
@@ -261,49 +439,180 @@ module.exports = angular;
 					return false;
 				},
 				select: function select(event, ui) {
-					var terms = split(this.value);
-					// remove the current input
-					terms.pop();
-					// add the selected item
-					terms.push(ui.item.value);
-					// add placeholder to get the comma-and-space at the end
-					terms.push("");
-					this.value = terms.join(", ");
-					return false;
+					if (fillInput) {
+						this.value = ui.item.value;
+						return false;
+					} else {
+						console.log('yes');
+						var terms = split(this.value);
+						// remove the current input
+						terms.pop();
+						// add the selected item
+						TripService.findTripById(tripId).then(function (trip) {
+							var selectedTerms = trip.countries.list;
+							if (selectedTerms.map(function (e) {
+								return e.name;
+							}).indexOf(ui.item.value) == -1) {
+								var newTrip = trip;
+								newTrip.countries.list.push({
+									name: ui.item.value
+								});
+								TripService.updateTrip(tripId, newTrip).then(function (status) {
+									//make sure updates to the db are reflected in the view
+									scope.model.update();
+								});
+							}
+						});
+						// add placeholder to get the comma-and-space at the end
+						terms.push("");
+						this.value = terms.join(", ");
+						return false;
+					}
 				}
 			});
 		}
 
 		return {
-			link: linkFunction
+			link: linkFunction,
+			scope: { model: '=' }
 		};
 	}
 })();
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 (function () {
-	angular.module("TravelApp").controller("globalController", globalController);
+	angular.module("appDirectives").directive("jgaSelectable", jgaSelectable);
 
-	function globalController($scope, $routeParams) {
-		var toState = $routeParams.state;
-		console.log("Global loaded");
-		var vm = this;
-		$scope.$on('$stateChangeStart', function (event, toState, toParams) {
-			vm.bodyClass = toState.name + '-page';
-			console.log("worked" + toState);
-		});
-		console.log("maybe" + toState);
+	function jgaSelectable($routeParams, TripService) {
+		function linkFunction(scope, element) {
+			var userId = $routeParams.uid;
+			var tripId = $routeParams.tid;
+			$(element).selectable({
+				stop: function stop() {
+					var cPOIs = scope.countryPois;
+					var results = scope.model.trip.interests.list;
+					$(".ui-selected", this).each(function () {
+						var temp = {
+							_id: $(this).attr('id')
+						};
+						var index = cPOIs.map(function (e) {
+							return e.id;
+						}).indexOf(temp._id);
+						var i = results.map(function (e) {
+							return e.id;
+						}).indexOf(temp._id);
+						if (index != -1) {
+							var selectedPoi = cPOIs[index];
+							if (i == -1) {
+								results.push(selectedPoi);
+								selectedPoi.status = 'SELECTED';
+							} else {
+								results.splice(i, 1);
+								selectedPoi.status = '';
+							}
+
+							TripService.updateTrip(tripId, scope.model.trip).then(function (res) {
+								// scope.model.update();
+							});
+						}
+					});
+				}
+			});
+		}
+		return {
+			link: linkFunction,
+			scope: {
+				model: '=',
+				countryPois: '='
+			}
+		};
 	}
 })();
 
 /***/ }),
-/* 8 */
+/* 10 */,
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("TravelApp").service("GoogleService", GoogleService);
+
+	function GoogleService($http) {
+
+		var googleConfig = {
+			placesKey: 'AIzaSyBynPLVkqYKWTGTvUC6mRkOBRDqizpi5Wc',
+			mapsKey: 'AIzaSyCebQiQ_1nj4lq3jcvTtg0OE04ynAt8uxY'
+		};
+
+		var api = {
+			"searchPOI": searchPOI,
+			"getPhoto": getPhoto,
+			"generateMap": generateMap
+		};
+		return api;
+		function searchPOI(terms) {
+			var url = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=PARAMETERS&key=API_KEY';
+			var poi = terms.replace(" ", "+");
+			url = url.replace("PARAMETERS", poi + "+tourist+attractions");
+			url = url.replace("API_KEY", googleConfig.placesKey);
+			return $http.get(url).then(function (response) {
+				response.data.place = poi;
+				return response.data;
+			});
+		}
+
+		function getPhoto(photoRef, maxWidth) {
+			var url = 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=MAX_WIDTH&photoreference=PHOTO_REFERENCE&key=API_KEY';
+			url = url.replace('MAX_WIDTH', maxWidth).replace('PHOTO_REFERENCE', photoRef).replace('API_KEY', googleConfig.placesKey);
+			return $http.get(url).then(function (response) {
+				return response.data;
+			});
+		}
+
+		function generateMap() {
+			var url = 'https://maps.googleapis.com/maps/api/js?key=API_KEY';
+			url = url.replace("API_KEY", googleConfig.mapsKey);
+			return $http.get(url).then(function (response) {
+				return response.data;
+			}, function (err) {});
+		}
+	}
+})();
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("TravelApp").service("RESTcountry", RESTcountry);
+
+	function RESTcountry($http) {
+		var urlAll = "https://restcountries.eu/rest/v2/all";
+		var api = {
+			"getAll": getAll
+		};
+		return api;
+
+		function getAll() {
+			return $http.get(urlAll);;
+		}
+	}
+})();
+
+/***/ }),
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -368,7 +677,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 9 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -435,7 +744,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 10 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -444,13 +753,53 @@ module.exports = angular;
 (function () {
 	angular.module("TravelApp").controller("editPlanCountryController", editPlanCountryController);
 
-	function editPlanCountryController() {
+	function editPlanCountryController($routeParams, TripService, $location) {
 		var vm = this;
+		vm.userId = $routeParams.uid;
+		vm.tripId = $routeParams.tid;
+		vm.update = update;
+		vm.final = final;
+		vm.revert = revert;
+		vm.removeCountry = removeCountry;
+		vm.gPlace;
+		function init() {
+			TripService.findTripById(vm.tripId).then(function (trip) {
+				vm.trip = trip;
+			});
+		}
+		init();
+
+		function update() {
+			TripService.findTripById(vm.tripId).then(function (trip) {
+				vm.trip = trip;
+			});
+		}
+
+		function final() {
+			var newTrip = vm.trip;
+			newTrip.countries.status = 'COMPLETE';
+			TripService.updateTrip(vm.tripId, newTrip).then(function (res) {});
+		}
+
+		function revert() {
+			var newTrip = vm.trip;
+			newTrip.countries.status = 'INPROGRESS';
+			TripService.updateTrip(vm.tripId, newTrip).then(function (res) {});
+		}
+
+		function removeCountry(countryId) {
+			var newArray = vm.trip.countries.list;
+			var i = newArray.map(function (e) {
+				return e._id;
+			}).indexOf(countryId);
+			newArray.splice(i, 1);
+			TripService.updateTrip(vm.tripId, vm.trip).then(function (res) {});
+		}
 	}
 })();
 
 /***/ }),
-/* 11 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -459,13 +808,84 @@ module.exports = angular;
 (function () {
 	angular.module("TravelApp").controller("editPlanInterestController", editPlanInterestController);
 
-	function editPlanInterestController() {
+	function editPlanInterestController($routeParams, TripService, $location, GoogleService) {
 		var vm = this;
+		vm.userId = $routeParams.uid;
+		vm.tripId = $routeParams.tid;
+		// vm.getPhoto = getPhoto;
+		vm.final = final;
+		vm.revert = revert;
+		vm.interests = [];
+
+		function init() {
+			TripService.findTripById(vm.tripId).then(function (trip) {
+				vm.trip = trip;
+
+				var list = vm.trip.countries.list;
+				var iList = vm.trip.interests.list;
+
+				for (var p = 0; p < list.length; p++) {
+					GoogleService.searchPOI(list[p].name).then(function (res) {
+						var temp = {
+							key: res.place,
+							poi: res.results
+						};
+						vm.interests.push(temp);
+						if (vm.interests.length == list.length) {
+							for (var i = 0; i < list.length; i++) {
+								var p = vm.interests.map(function (e) {
+									return e.key;
+								}).indexOf(list[i].name);
+								vm.trip.countries.list[i].pois = vm.interests[p].poi;
+
+								var pList = vm.interests[p].poi;
+								for (var p in pList) {
+									var index = iList.map(function (e) {
+										return e.id;
+									}).indexOf(pList[p].id);
+									if (index != -1) {
+										pList[p].status = 'SELECTED';
+									};
+								}
+
+								// TODO Finish photos. this returns an actual img
+
+								// var pList = vm.interests[p].poi;
+								// for (var poi in pList) {
+								// 	console.log(pList[0]);
+								// 	console.log(pList[0].name);
+								// 	var p = pList[0].photos[0];
+								// 	GoogleService
+								// 		.getPhoto(p.photo_reference, 500)
+								// 		.then(function(res) {
+								// 			console.log(res);
+								// 			p.src = res;
+								// 		})
+								// }
+							}
+						}
+					});
+				};
+			});
+		}
+		init();
+
+		function final() {
+			var newTrip = vm.trip;
+			newTrip.interests.status = 'COMPLETE';
+			TripService.updateTrip(vm.tripId, newTrip).then(function (res) {});
+		}
+
+		function revert() {
+			var newTrip = vm.trip;
+			newTrip.interests.status = 'INPROGRESS';
+			TripService.updateTrip(vm.tripId, newTrip).then(function (res) {});
+		}
 	}
 })();
 
 /***/ }),
-/* 12 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -480,7 +900,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 13 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -489,13 +909,163 @@ module.exports = angular;
 (function () {
 	angular.module("TravelApp").controller("editPlanRouteController", editPlanRouteController);
 
-	function editPlanRouteController() {
+	function editPlanRouteController($routeParams, TripService, GoogleService) {
 		var vm = this;
+		vm.userId = $routeParams.uid;
+		vm.tripId = $routeParams.tid;
+		vm.final = final;
+		vm.revert = revert;
+		vm.initMap = initMap;
+		vm.addWaypoint = addWaypoint;
+		vm.removeWaypoint = removeWaypoint;
+		vm.gPlace;
+		vm.routes;
+		vm.map;
+		vm.removed;
+		vm.markers = [];
+		vm.dirDisplay = [];
+
+		function init() {
+			TripService.findTripById(vm.tripId).then(function (trip) {
+				vm.trip = trip;
+
+				if (vm.trip.route.list.length == 0) {
+					var list = vm.trip.route.list;
+					var count = $('ul.route').children('li').length;
+					var temp = {
+						id: count
+					};
+					list.push(temp);
+					vm.routes = list;
+				}
+
+				GoogleService.generateMap().then(function (map) {
+					vm.initMap();
+				});
+			});
+		}
+		init();
+
+		function initMap() {
+			var bounds = new google.maps.LatLngBounds();
+			var interests = vm.trip.interests.list;
+			var places = vm.trip.route.list;
+
+			vm.map = new google.maps.Map(document.getElementById('map'), {
+				zoom: 4
+			});
+
+			for (var i = 0; i < interests.length; i++) {
+				var marker = new google.maps.Marker({
+					map: vm.map,
+					position: interests[i].geometry.location
+				});
+				var pinIcon = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FFFF00", null, /* size is determined at runtime */
+				null, /* origin is 0,0 */
+				null, /* anchor is bottom center of the scaled image */
+				new google.maps.Size(10, 20));
+				marker.setIcon(pinIcon);
+				bounds.extend(interests[i].geometry.location);
+				vm.markers.push(marker);
+			}
+			if (places[0].place != null) {
+				for (var i = 0; i < places.length; i++) {
+					var marker = new google.maps.Marker({
+						map: vm.map,
+						position: places[i].place.geometry.location
+					});
+					bounds.extend(places[i].place.geometry.location);
+					vm.markers.push(marker);
+				}
+			}
+			vm.map.fitBounds(bounds);
+
+			if (places.length != 0) {
+				var renderDirections = function renderDirections(result, index) {
+					var directionsRenderer = new google.maps.DirectionsRenderer();
+					directionsRenderer.setMap(vm.map);
+					directionsRenderer.setDirections(result);
+					vm.dirDisplay.push(directionsRenderer);
+					var duration = directionsRenderer.directions.routes[0].legs[0].duration.text;
+					var temp = '#' + index;
+					$(temp).find('.route__item__dir').html(duration);
+				};
+
+				var requestDirections = function requestDirections(start, end, index) {
+					directionsService.route({
+						origin: start,
+						destination: end,
+						travelMode: google.maps.DirectionsTravelMode.DRIVING // TRANSIT
+					}, function (result) {
+						renderDirections(result, index);
+					});
+				};
+
+				var directionsService = new google.maps.DirectionsService();
+
+				for (var i = 0; i < places.length; i++) {
+					var input = '#' + i + ' input';
+					$(input).val(places[i].place.formatted_address);
+					if (i + 1 != places.length) {
+						requestDirections(places[i].place.geometry.location, places[i + 1].place.geometry.location, i);
+					}
+				}
+			}
+		}
+
+		function addWaypoint(e) {
+			var routeItem = $(e.currentTarget).parent();
+			if ($(routeItem).find('input').val().length != 0) {
+				var count = $('ul.route').children('li').length;
+				var list = vm.trip.route.list;
+				var temp = { id: count };
+				var init = $(routeItem).attr('id');
+
+				list.splice(parseInt(init) + 1, 0, temp);
+
+				for (var i = 0; i < count + 1; i++) {
+					list[i].id = i;
+				}
+				vm.routes = list;
+			} else {
+				$(routeItem).find('input').focus();
+			}
+		}
+
+		function removeWaypoint(e) {
+			var routeItem = $(e.currentTarget).parent();
+			var count = $('ul.route').children('li').length;
+			var list = vm.trip.route.list;
+			var init = parseInt($(routeItem).attr('id'));
+			vm.removed = list.splice(init, 1);
+			var markerId = vm.trip.interests.list.length + init; // lol this is so jank
+			vm.markers[markerId].setMap(null);
+
+			for (var i = 0; i < count - 1; i++) {
+				list[i].id = i;
+			}
+			vm.routes = list;
+			// console.log(list);
+			// vm.updateMap($(routeItem).find('input'));
+			google.maps.event.trigger(vm.gPlace, 'place_changed');
+		}
+
+		function final() {
+			var newTrip = vm.trip;
+			newTrip.route.status = 'COMPLETE';
+			TripService.updateTrip(vm.tripId, newTrip).then(function (res) {});
+		}
+
+		function revert() {
+			var newTrip = vm.trip;
+			newTrip.route.status = 'INPROGRESS';
+			TripService.updateTrip(vm.tripId, newTrip).then(function (res) {});
+		}
 	}
 })();
 
 /***/ }),
-/* 14 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -504,13 +1074,131 @@ module.exports = angular;
 (function () {
 	angular.module("TravelApp").controller("editPlanTimelineController", editPlanTimelineController);
 
-	function editPlanTimelineController() {
+	function editPlanTimelineController($routeParams, TripService) {
 		var vm = this;
+		vm.userId = $routeParams.uid;
+		vm.tripId = $routeParams.tid;
+		vm.setDateRange = setDateRange;
+		vm.saveDay = saveDay;
+		vm.insertDay = insertDay;
+		vm.deleteDay = deleteDay;
+		vm.daysBetween = daysBetween;
+		vm.final = final;
+		vm.revert = revert;
+		vm.update = update;
+		vm.destinations = [];
+
+		function init() {
+			TripService.findTripById(vm.tripId).then(function (trip) {
+				vm.trip = trip;
+				vm.trip.start = new Date(trip.start);
+				vm.trip.end = new Date(trip.end);
+				for (var day in vm.trip.timeline.list) {
+					var list = vm.trip.timeline.list;
+					list[day].arrival = new Date(list[day].arrival);
+				}
+				for (var p in vm.trip.route.list) {
+					vm.destinations.push(vm.trip.route.list[p].place.formatted_address);
+				}
+			});
+		}
+		init();
+
+		function setDateRange(trip) {
+			var today = new Date();
+			if (trip.start < trip.end && trip.start > today) {
+				var start = new Date(trip.start);
+				var end = new Date(trip.end);
+				var newTrip = vm.trip;
+
+				newTrip.start = trip.start;
+				newTrip.end = trip.end;
+				TripService.updateTrip(vm.tripId, trip).then(function (status) {
+					vm.success = 'Updated';
+					if (vm.trip.timeline.list.length == 0) {
+						createDay();
+					}
+				});
+			} else {
+				vm.error = 'Please select a valid date range';
+			}
+		}
+
+		function createDay(order) {
+			order = order == null ? 0 : parseInt(order) + 1;
+			var temp = {
+				_parent: vm.tripId,
+				arrival: vm.trip.start,
+				order: null,
+				city: null //place_id
+			};
+			vm.trip.timeline.list.splice(order, 0, temp);
+
+			for (var day in vm.trip.timeline.list) {
+				vm.trip.timeline.list[day].order = day;
+			}
+			TripService.updateTrip(vm.tripId, vm.trip).then(function (status) {});
+		}
+
+		function saveDay(dayId, day) {
+			var newTrip = vm.trip;
+			var i = newTrip.timeline.list.map(function (e) {
+				return e._id;
+			}).indexOf(dayId);
+
+			newTrip.timeline.list[i] = day;
+			TripService.updateTrip(vm.tripId, newTrip).then(function (status) {});
+		}
+
+		function insertDay(dayId) {
+			createDay(dayId);
+		}
+
+		function deleteDay(dayId) {
+			var newTrip = vm.trip;
+			var i = newTrip.timeline.list.map(function (e) {
+				return e._id;
+			}).indexOf(dayId);
+			newTrip.timeline.list.splice(i, 1);
+			for (var day in vm.trip.timeline.list) {
+				vm.trip.timeline.list[day].order = day;
+			}
+			TripService.updateTrip(vm.tripId, newTrip).then(function (status) {});
+		}
+
+		function update() {
+			TripService.findTripById(vm.tripId).then(function (trip) {
+				vm.trip = trip;
+			});
+		}
+
+		function treatAsUTC(date) {
+			var result = new Date(date);
+			result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
+			return result;
+		}
+
+		function daysBetween(startDate, endDate) {
+			var millisecondsPerDay = 24 * 60 * 60 * 1000;
+			return (treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay + 1;
+		}
+
+		function final() {
+			var newTrip = vm.trip;
+			newTrip.timeline.status = 'COMPLETE';
+			TripService.updateTrip(vm.tripId, newTrip).then(function (res) {});
+		}
+
+		function revert() {
+			var newTrip = vm.trip;
+			newTrip.timeline.status = 'INPROGRESS';
+			TripService.updateTrip(vm.tripId, newTrip).then(function (res) {});
+		}
 	}
 })();
 
 /***/ }),
-/* 15 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -519,13 +1207,33 @@ module.exports = angular;
 (function () {
 	angular.module("TravelApp").controller("newPlanController", newPlanController);
 
-	function newPlanController() {
+	function newPlanController($routeParams, TripService, $location) {
 		var vm = this;
+		vm.userId = $routeParams["uid"];
+		vm.webId = $routeParams["wid"];
+		vm.create = create;
+
+		function init() {}
+		init();
+
+		function notEmpty(obj) {
+			return !angular.isUndefined(obj) && obj.name != '' && !angular.isUndefined(obj.name);
+		}
+
+		function create(trip) {
+			if (notEmpty(trip)) {
+				TripService.createTrip(vm.userId, trip).then(function (newTrip) {
+					$location.url("/user/" + vm.userId + "/trip/" + newTrip._id + "/edit-plan-country");
+				});
+			} else {
+				vm.error = 'Please create a title for your trip';
+			}
+		}
 	}
 })();
 
 /***/ }),
-/* 16 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -540,7 +1248,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 17 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -555,7 +1263,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 18 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -570,7 +1278,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 19 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -615,7 +1323,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 20 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -652,7 +1360,7 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 21 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -661,15 +1369,20 @@ module.exports = angular;
 (function () {
     angular.module("TravelApp").controller("profileController", profileController);
 
-    function profileController($routeParams, UserService, $location) {
+    function profileController($routeParams, UserService, TripService, $location) {
         var vm = this;
         vm.userId = $routeParams["uid"];
         vm.update = update;
         vm.remove = remove;
+        vm.deleteTrip = deleteTrip;
 
         function init() {
+            $('body').removeAttr('class');
             UserService.findUserById(vm.userId).then(function (user) {
                 vm.user = user;
+                TripService.findTripByUserId(vm.userId).then(function (trips) {
+                    vm.trips = trips;
+                });
             });
         }
         init();
@@ -690,13 +1403,21 @@ module.exports = angular;
             });
         }
 
+        function deleteTrip(tripId) {
+            TripService.deleteTrip(tripId).then(function (response) {
+                TripService.findTripByUserId(vm.userId).then(function (trips) {
+                    vm.trips = trips;
+                });
+            });
+        }
+
         var user = UserService.findUserById(vm.userId);
         vm.user = user;
     }
 })();
 
 /***/ }),
-/* 22 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -740,16 +1461,16 @@ module.exports = angular;
 })();
 
 /***/ }),
-/* 23 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(29);
+var content = __webpack_require__(34);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(33)(content, {});
+var update = __webpack_require__(39)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -766,7 +1487,7 @@ if(false) {
 }
 
 /***/ }),
-/* 24 */
+/* 29 */
 /***/ (function(module, exports) {
 
 /**
@@ -2001,7 +2722,7 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 
 /***/ }),
-/* 25 */
+/* 30 */
 /***/ (function(module, exports) {
 
 /**
@@ -35351,7 +36072,7 @@ $provide.value("$locale", {
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
 
 /***/ }),
-/* 26 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35365,7 +36086,7 @@ __webpack_require__(1);
 __webpack_require__(0);
 
 /* Stylesheets */
-__webpack_require__(23);
+__webpack_require__(28);
 
 /* Scripts */
 __webpack_require__(2);
@@ -35373,32 +36094,38 @@ __webpack_require__(3);
 
 /* Services */
 // require('../public/services/plan.service.client.js');
-__webpack_require__(8);
-__webpack_require__(9);
+__webpack_require__(13);
+__webpack_require__(14);
+__webpack_require__(12);
+__webpack_require__(11);
+// require ('../public/services/route.service.client.js');
+// require ('../public/services/timeline.service.client.js');
 
 /* Controllers */
-__webpack_require__(20);
+__webpack_require__(25);
+__webpack_require__(27);
+__webpack_require__(26);
+__webpack_require__(24);
 __webpack_require__(22);
+__webpack_require__(23);
 __webpack_require__(21);
-__webpack_require__(19);
-__webpack_require__(17);
-__webpack_require__(18);
-__webpack_require__(16);
+__webpack_require__(20);
 __webpack_require__(15);
-__webpack_require__(10);
-__webpack_require__(11);
-__webpack_require__(13);
-__webpack_require__(12);
-__webpack_require__(14);
-__webpack_require__(7);
+__webpack_require__(16);
+__webpack_require__(18);
+__webpack_require__(17);
+__webpack_require__(19);
 
 /* Directives */
 __webpack_require__(4);
 __webpack_require__(5);
+__webpack_require__(8);
+__webpack_require__(9);
 __webpack_require__(6);
+__webpack_require__(7);
 
 /***/ }),
-/* 27 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35519,7 +36246,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 28 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35533,9 +36260,9 @@ function fromByteArray (uint8) {
 
 
 
-var base64 = __webpack_require__(27)
-var ieee754 = __webpack_require__(31)
-var isArray = __webpack_require__(32)
+var base64 = __webpack_require__(32)
+var ieee754 = __webpack_require__(36)
+var isArray = __webpack_require__(37)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -37313,24 +38040,24 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(35)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(41)))
 
 /***/ }),
-/* 29 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(30)(undefined);
+exports = module.exports = __webpack_require__(35)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, "/* Variables */\n/* Breakpoints */\n/* Colors */\n/* Components */\n.navbar .navbar-header {\n  position: relative; }\n  .navbar .navbar-header a {\n    color: white; }\n  .navbar .navbar-header .profile-icon {\n    position: absolute;\n    top: 50%;\n    transform: translate(0%, -50%);\n    vertical-align: middle;\n    right: 0; }\n  .navbar .navbar-header--green a {\n    color: #204F20; }\n\n@media only screen and (min-width: 768px) {\n  .navbar .navbar-header {\n    float: none; } }\n\n/* Pages */\n.search {\n  max-width: 450px;\n  margin: 80px auto; }\n  .search .title {\n    max-width: 290px;\n    color: white;\n    font-weight: bold;\n    text-align: center;\n    margin: 20px auto; }\n  @media only screen and (min-width: 768px) {\n    .search {\n      max-width: 700px; }\n      .search .title {\n        max-width: none; } }\n\n.login {\n  max-width: 560px; }\n  .login h1 {\n    font-weight: bold;\n    color: #FFFFFF; }\n  .login .panel {\n    padding: 15px 10px; }\n    .login .panel label {\n      color: #204F20; }\n    .login .panel .form-control {\n      margin-bottom: 20px; }\n\n.register {\n  color: #FFFFFF;\n  max-width: 450px; }\n  .register__title {\n    font-weight: bold;\n    text-align: center; }\n  .register input {\n    margin-bottom: 20px; }\n  .register a {\n    margin: 5px 20px; }\n\n.profile .summary {\n  background-color: #E2DE9D;\n  position: relative; }\n  .profile .summary__img {\n    display: inline-block;\n    position: relative;\n    height: 100px;\n    width: 100px;\n    overflow: hidden;\n    border-radius: 50%; }\n    .profile .summary__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n  .profile .summary__edit {\n    z-index: 1;\n    position: absolute;\n    right: 0;\n    background-color: #FFFFFF;\n    width: 25px;\n    border-bottom-left-radius: 10%;\n    padding: 2px 5px; }\n\n.profile .in-progress {\n  margin-top: 20px;\n  padding: 0px 15px 10px; }\n\n.profile .past__last .trip {\n  display: block;\n  margin: 10px auto;\n  background-color: #FFFFFF;\n  width: 100%;\n  overflow: hidden; }\n  .profile .past__last .trip:first-child {\n    margin-top: 0; }\n  .profile .past__last .trip__img {\n    display: block;\n    width: 100%;\n    position: relative;\n    height: 100px;\n    overflow: hidden; }\n    .profile .past__last .trip__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n  .profile .past__last .trip__copy {\n    padding: 5px 15px 20px; }\n    .profile .past__last .trip__copy__countries {\n      display: block; }\n      .profile .past__last .trip__copy__countries__item {\n        display: inline-block;\n        margin: 5px; }\n        .profile .past__last .trip__copy__countries__item:first-child {\n          margin-left: 0; }\n    .profile .past__last .trip__copy__length {\n      display: inline-block; }\n    .profile .past__last .trip__copy__cost {\n      display: inline-block;\n      margin-left: 10px; }\n\n.trip-results .trip-list .trip {\n  display: block;\n  margin: 10px auto;\n  background-color: #FFFFFF; }\n  .trip-results .trip-list .trip:first-child {\n    margin-top: 0; }\n  .trip-results .trip-list .trip__img {\n    display: block;\n    width: 100%;\n    position: relative;\n    height: 100px;\n    overflow: hidden; }\n    .trip-results .trip-list .trip__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n  .trip-results .trip-list .trip__copy {\n    padding: 5px 15px 20px; }\n    .trip-results .trip-list .trip__copy__countries {\n      display: block; }\n      .trip-results .trip-list .trip__copy__countries__item {\n        display: inline-block;\n        margin: 5px; }\n        .trip-results .trip-list .trip__copy__countries__item:first-child {\n          margin-left: 0; }\n    .trip-results .trip-list .trip__copy__length {\n      display: inline-block; }\n    .trip-results .trip-list .trip__copy__cost {\n      display: inline-block;\n      margin-left: 10px; }\n\n.trip-review {\n  padding: 0; }\n  .trip-review .map {\n    width: 0;\n    height: 0; }\n  .trip-review .summary {\n    background-color: #E2DE9D;\n    display: block;\n    width: 100%;\n    padding: 15px; }\n    .trip-review .summary__title {\n      font-weight: bold;\n      color: #204F20; }\n    .trip-review .summary__countries {\n      display: block;\n      width: 100%; }\n      .trip-review .summary__countries__item {\n        display: inline-block;\n        margin: 10px; }\n        .trip-review .summary__countries__item:first-child {\n          margin-left: 0; }\n        .trip-review .summary__countries__item svg {\n          width: 0;\n          height: 0; }\n        .trip-review .summary__countries__item span {\n          color: #204F20;\n          font-weight: bold; }\n    .trip-review .summary__length {\n      display: inline-block;\n      color: #204F20;\n      font-weight: bold; }\n    .trip-review .summary__cities {\n      margin-left: 20px;\n      display: inline-block;\n      color: #204F20;\n      font-weight: bold; }\n    .trip-review .summary__pack {\n      margin-top: 20px; }\n    .trip-review .summary__cost {\n      width: 0;\n      height: 0; }\n  .trip-review .city {\n    position: relative;\n    color: #FFFFFF;\n    padding: 15px;\n    overflow: hidden; }\n    .trip-review .city__bg {\n      z-index: -1;\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n    .trip-review .city__arrival-date {\n      font-size: 12px; }\n    .trip-review .city__name {\n      font-weight: bold;\n      margin: 0; }\n    .trip-review .city__rating {\n      width: 0;\n      height: 0; }\n    .trip-review .city__activity__item {\n      width: 100%;\n      display: block;\n      background-color: #FFFFFF; }\n      .trip-review .city__activity__item .img-container {\n        position: relative;\n        height: 50px;\n        overflow: hidden; }\n        .trip-review .city__activity__item .img-container img {\n          position: absolute;\n          top: 50%;\n          left: 50%;\n          transform: translate(-50%, -50%);\n          vertical-align: middle; }\n      .trip-review .city__activity__item span {\n        color: black; }\n      .trip-review .city__activity__item svg {\n        width: 0;\n        height: 0; }\n    .trip-review .city__cost {\n      width: 0;\n      height: 0; }\n  .trip-review .travel {\n    padding: 15px; }\n    .trip-review .travel__icon {\n      width: 0;\n      height: 0; }\n    .trip-review .travel__airport {\n      display: block;\n      width: 100%;\n      margin-bottom: 20px; }\n      .trip-review .travel__airport p:first-child {\n        text-transform: uppercase;\n        color: #204F20;\n        margin: 0;\n        font-weight: bold; }\n      .trip-review .travel__airport h3 {\n        margin-top: 0;\n        font-weight: bold; }\n    .trip-review .travel__details p {\n      margin: 0; }\n    .trip-review .travel__length {\n      color: #204F20;\n      font-weight: bold; }\n\nbody.bg--white {\n  background-color: #FFFFFF; }\n\nbody.bg--dirty-brown {\n  background-color: #E2DE9D; }\n\nbody .bg-img {\n  z-index: -1;\n  filter: blur(3px) brightness(0.7);\n  position: fixed;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  vertical-align: middle; }\n\nbody .btn-primary {\n  border-color: #6E9E75;\n  background-color: #6E9E75; }\n  body .btn-primary:hover {\n    border-color: #638E69;\n    background-color: #638E69; }\n\nbody .btn-success {\n  border-color: #204F20;\n  background-color: #204F20; }\n  body .btn-success:hover {\n    border-color: #123812;\n    background-color: #123812; }\n\nbody .link-primary {\n  color: #204F20; }\n  body .link-primary:hover {\n    color: #123812; }\n", ""]);
+exports.push([module.i, "/* Variables */\n/* Breakpoints */\n/* Colors */\n/* Components */\n.navbar .navbar-header {\n  position: relative; }\n  .navbar .navbar-header a {\n    color: white; }\n  .navbar .navbar-header .profile-icon {\n    position: absolute;\n    top: 50%;\n    transform: translate(0%, -50%);\n    vertical-align: middle;\n    right: 0; }\n  .navbar .navbar-header--green a {\n    color: #204F20; }\n\n@media only screen and (min-width: 768px) {\n  .navbar .navbar-header {\n    float: none; } }\n\n/* Pages */\n.search {\n  max-width: 450px;\n  margin: 80px auto; }\n  .search .title {\n    max-width: 290px;\n    color: white;\n    font-weight: bold;\n    text-align: center;\n    margin: 20px auto; }\n  @media only screen and (min-width: 768px) {\n    .search {\n      max-width: 700px; }\n      .search .title {\n        max-width: none; } }\n\n.login {\n  max-width: 560px; }\n  .login h1 {\n    font-weight: bold;\n    color: #FFFFFF; }\n  .login .panel {\n    padding: 15px 10px; }\n    .login .panel label {\n      color: #204F20; }\n    .login .panel .form-control {\n      margin-bottom: 20px; }\n\n.register {\n  color: #FFFFFF;\n  max-width: 450px; }\n  .register__title {\n    font-weight: bold;\n    text-align: center; }\n  .register input {\n    margin-bottom: 20px; }\n  .register a {\n    margin: 5px 20px; }\n\n.profile .bg {\n  top: 0px;\n  left: 0px;\n  z-index: -1;\n  width: 100%;\n  height: 100%;\n  display: block;\n  position: fixed;\n  background-color: #E5F4E3; }\n\n.profile .summary {\n  padding: 0px 20px;\n  position: relative; }\n  .profile .summary__img {\n    display: block;\n    position: relative;\n    top: -30px;\n    height: 100px;\n    width: 100px;\n    overflow: hidden;\n    border-radius: 50%;\n    margin: 0 auto; }\n    .profile .summary__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle;\n      max-height: 100%; }\n  .profile .summary__copy {\n    text-align: center; }\n    .profile .summary__copy__username {\n      font-weight: bold; }\n  .profile .summary__edit {\n    z-index: 1;\n    position: absolute;\n    right: 0;\n    background-color: #FFFFFF;\n    width: 25px;\n    border-bottom-left-radius: 10%;\n    padding: 2px 5px; }\n\n.profile .in-progress {\n  margin: 20px 0 40px;\n  padding: 0px 15px 10px; }\n  .profile .in-progress__title {\n    color: #204F20;\n    font-weight: bold; }\n\n.profile .upcoming {\n  margin-bottom: 40px; }\n  .profile .upcoming__title {\n    color: #6E9E75;\n    font-weight: bold; }\n  .profile .upcoming__trips {\n    padding: 10px 15px; }\n\n.profile .planning {\n  margin-bottom: 40px; }\n  .profile .planning__title {\n    color: #6E9E75;\n    font-weight: bold; }\n  .profile .planning__plans {\n    margin-bottom: 20px; }\n    .profile .planning__plans__item {\n      padding: 10px 15px;\n      position: relative; }\n      .profile .planning__plans__item .menu li {\n        display: inline-block;\n        margin: 0px 5px; }\n    .profile .planning__plans h5 {\n      font-weight: bold;\n      display: block; }\n    .profile .planning__plans .plan-in-progress li a {\n      color: #123812; }\n    .profile .planning__plans .plan-in-progress li .glyphicon-ok {\n      color: #6E9E75; }\n    .profile .planning__plans .plan-in-progress li .glyphicon-remove {\n      color: #D06B6B; }\n\n.profile .past {\n  margin-bottom: 40px; }\n  .profile .past__title {\n    color: #6E9E75;\n    font-weight: bold; }\n  .profile .past__list .trip {\n    display: block;\n    margin: 10px auto;\n    background-color: #FFFFFF;\n    width: 100%;\n    overflow: hidden; }\n    .profile .past__list .trip:first-child {\n      margin-top: 0; }\n    .profile .past__list .trip__img {\n      display: block;\n      width: 100%;\n      position: relative;\n      height: 100px;\n      overflow: hidden; }\n      .profile .past__list .trip__img img {\n        width: 100%;\n        position: absolute;\n        top: 50%;\n        left: 50%;\n        transform: translate(-50%, -50%);\n        vertical-align: middle; }\n    .profile .past__list .trip__copy {\n      padding: 5px 15px 20px; }\n      .profile .past__list .trip__copy__countries {\n        display: block; }\n        .profile .past__list .trip__copy__countries__item {\n          display: inline-block;\n          margin: 5px; }\n          .profile .past__list .trip__copy__countries__item:first-child {\n            margin-left: 0; }\n      .profile .past__list .trip__copy__length {\n        display: inline-block; }\n      .profile .past__list .trip__copy__cost {\n        display: inline-block;\n        margin-left: 10px; }\n\n.trip-results .trip-list .trip {\n  display: block;\n  margin: 10px auto;\n  background-color: #FFFFFF; }\n  .trip-results .trip-list .trip:first-child {\n    margin-top: 0; }\n  .trip-results .trip-list .trip__img {\n    display: block;\n    width: 100%;\n    position: relative;\n    height: 100px;\n    overflow: hidden; }\n    .trip-results .trip-list .trip__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n  .trip-results .trip-list .trip__copy {\n    padding: 5px 15px 20px; }\n    .trip-results .trip-list .trip__copy__countries {\n      display: block; }\n      .trip-results .trip-list .trip__copy__countries__item {\n        display: inline-block;\n        margin: 5px; }\n        .trip-results .trip-list .trip__copy__countries__item:first-child {\n          margin-left: 0; }\n    .trip-results .trip-list .trip__copy__length {\n      display: inline-block; }\n    .trip-results .trip-list .trip__copy__cost {\n      display: inline-block;\n      margin-left: 10px; }\n\n.trip-review {\n  padding: 0; }\n  .trip-review .map {\n    width: 0;\n    height: 0; }\n  .trip-review .summary {\n    background-color: #E2DE9D;\n    display: block;\n    width: 100%;\n    padding: 15px; }\n    .trip-review .summary__title {\n      font-weight: bold;\n      color: #204F20; }\n    .trip-review .summary__countries {\n      display: block;\n      width: 100%; }\n      .trip-review .summary__countries__item {\n        display: inline-block;\n        margin: 10px; }\n        .trip-review .summary__countries__item:first-child {\n          margin-left: 0; }\n        .trip-review .summary__countries__item svg {\n          width: 0;\n          height: 0; }\n        .trip-review .summary__countries__item span {\n          color: #204F20;\n          font-weight: bold; }\n    .trip-review .summary__length {\n      display: inline-block;\n      color: #204F20;\n      font-weight: bold; }\n    .trip-review .summary__cities {\n      margin-left: 20px;\n      display: inline-block;\n      color: #204F20;\n      font-weight: bold; }\n    .trip-review .summary__pack {\n      margin-top: 20px; }\n    .trip-review .summary__cost {\n      width: 0;\n      height: 0; }\n  .trip-review .city {\n    position: relative;\n    color: #FFFFFF;\n    padding: 15px;\n    overflow: hidden; }\n    .trip-review .city__bg {\n      z-index: -1;\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n    .trip-review .city__arrival-date {\n      font-size: 12px; }\n    .trip-review .city__name {\n      font-weight: bold;\n      margin: 0; }\n    .trip-review .city__rating {\n      width: 0;\n      height: 0; }\n    .trip-review .city__activity__item {\n      width: 100%;\n      display: block;\n      background-color: #FFFFFF; }\n      .trip-review .city__activity__item .img-container {\n        position: relative;\n        height: 50px;\n        overflow: hidden; }\n        .trip-review .city__activity__item .img-container img {\n          position: absolute;\n          top: 50%;\n          left: 50%;\n          transform: translate(-50%, -50%);\n          vertical-align: middle; }\n      .trip-review .city__activity__item span {\n        color: black; }\n      .trip-review .city__activity__item svg {\n        width: 0;\n        height: 0; }\n    .trip-review .city__cost {\n      width: 0;\n      height: 0; }\n  .trip-review .travel {\n    padding: 15px; }\n    .trip-review .travel__icon {\n      width: 0;\n      height: 0; }\n    .trip-review .travel__airport {\n      display: block;\n      width: 100%;\n      margin-bottom: 20px; }\n      .trip-review .travel__airport p:first-child {\n        text-transform: uppercase;\n        color: #204F20;\n        margin: 0;\n        font-weight: bold; }\n      .trip-review .travel__airport h3 {\n        margin-top: 0;\n        font-weight: bold; }\n    .trip-review .travel__details p {\n      margin: 0; }\n    .trip-review .travel__length {\n      color: #204F20;\n      font-weight: bold; }\n\n.new-plan .bg {\n  top: 0px;\n  left: 0px;\n  z-index: -1;\n  width: 100%;\n  height: 100%;\n  display: block;\n  position: fixed;\n  background-color: #E5F4E3; }\n\n.new-plan h1 {\n  color: #204F20;\n  font-weight: bold; }\n\n.edit-plan-route .route__item {\n  position: relative;\n  padding: 0px 0px 20px 15px;\n  margin-left: 5px;\n  border-left: 1px solid black; }\n  .edit-plan-route .route__item .input-group #from {\n    display: none; }\n  .edit-plan-route .route__item .input-group #to {\n    display: table-cell; }\n  .edit-plan-route .route__item__dir {\n    padding-top: 20px; }\n  .edit-plan-route .route__item__add {\n    position: absolute;\n    top: 0px;\n    left: -8px;\n    padding: 0;\n    margin: 0;\n    background-color: #FFFFFF;\n    height: 17px; }\n  .edit-plan-route .route__item__remove {\n    position: absolute;\n    top: 17px;\n    left: -8px;\n    padding: 0;\n    margin: 0;\n    background-color: #FFFFFF;\n    height: 17px; }\n  .edit-plan-route .route__item:first-child .input-group #from {\n    display: table-cell; }\n  .edit-plan-route .route__item:first-child .input-group #to {\n    display: none; }\n  .edit-plan-route .route__item:first-child .route__item__add {\n    top: 8px; }\n  .edit-plan-route .route__item:first-child .route__item__remove {\n    display: none; }\n  .edit-plan-route .route__item:last-child {\n    padding-bottom: 0px;\n    margin-bottom: 30px; }\n    .edit-plan-route .route__item:last-child .route__item__dir {\n      padding: 0px; }\n\n.edit-plan-route #map {\n  height: 400px;\n  width: 100%; }\n\n.edit-plan-interest .country {\n  padding: 0;\n  margin-bottom: 30px; }\n  .edit-plan-interest .country__interests__item {\n    min-height: 100px;\n    overflow: hidden;\n    position: relative;\n    padding: 0 5px 10px;\n    background-color: rgba(0, 0, 0, 0.7);\n    border-bottom: 0.1px solid #666;\n    border-right: 0.1px solid #666; }\n    .edit-plan-interest .country__interests__item:nth-child(even) {\n      margin-right: 0; }\n    .edit-plan-interest .country__interests__item img {\n      width: 100%;\n      z-index: -1;\n      filter: brightness(0.7);\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n    .edit-plan-interest .country__interests__item .copy {\n      color: #FFFFFF;\n      font-weight: bold; }\n      .edit-plan-interest .country__interests__item .copy__rating {\n        display: block; }\n    .edit-plan-interest .country__interests__item .glyphicon {\n      position: absolute;\n      right: 0;\n      bottom: 0;\n      top: initial;\n      border-radius: 50%;\n      margin: 6px;\n      font-size: 20px;\n      background-color: #FFFFFF; }\n      .edit-plan-interest .country__interests__item .glyphicon--red {\n        color: red; }\n      .edit-plan-interest .country__interests__item .glyphicon--green {\n        color: #204F20; }\n\n.edit-plan-timeline {\n  margin-bottom: 40px; }\n  .edit-plan-timeline input {\n    margin-bottom: 20px; }\n  .edit-plan-timeline .days {\n    margin-top: 30px; }\n    .edit-plan-timeline .days__item {\n      position: relative;\n      padding: 20px 15px 50px;\n      margin-bottom: 20px; }\n      .edit-plan-timeline .days__item__menu {\n        position: absolute;\n        bottom: 0;\n        right: 10px;\n        margin: 10px 0; }\n        .edit-plan-timeline .days__item__menu a {\n          display: inline-block;\n          margin: 0 5px; }\n\nbody.bg--white {\n  background-color: #FFFFFF; }\n\nbody.bg--dirty-brown {\n  background-color: #E2DE9D; }\n\nbody .bg-img {\n  z-index: -1;\n  filter: blur(3px) brightness(0.7);\n  position: fixed;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  vertical-align: middle; }\n\nbody .btn-primary {\n  border-color: #6E9E75;\n  background-color: #6E9E75; }\n  body .btn-primary:hover {\n    border-color: #638E69;\n    background-color: #638E69; }\n\nbody .btn-success {\n  border-color: #204F20;\n  background-color: #204F20; }\n  body .btn-success:hover {\n    border-color: #123812;\n    background-color: #123812; }\n\nbody .link-primary {\n  color: #204F20; }\n  body .link-primary:hover {\n    color: #123812; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 30 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {/*
@@ -37409,10 +38136,10 @@ function toComment(sourceMap) {
   return '/*# ' + data + ' */';
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(28).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(33).Buffer))
 
 /***/ }),
-/* 31 */
+/* 36 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -37502,7 +38229,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 32 */
+/* 37 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -37513,7 +38240,8 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 33 */
+/* 38 */,
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -37550,7 +38278,7 @@ var stylesInDom = {},
 	singletonElement = null,
 	singletonCounter = 0,
 	styleElementsInsertedAtTop = [],
-	fixUrls = __webpack_require__(34);
+	fixUrls = __webpack_require__(40);
 
 module.exports = function(list, options) {
 	if(typeof DEBUG !== "undefined" && DEBUG) {
@@ -37809,7 +38537,7 @@ function updateLink(linkElement, options, obj) {
 
 
 /***/ }),
-/* 34 */
+/* 40 */
 /***/ (function(module, exports) {
 
 
@@ -37904,7 +38632,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 35 */
+/* 41 */
 /***/ (function(module, exports) {
 
 var g;

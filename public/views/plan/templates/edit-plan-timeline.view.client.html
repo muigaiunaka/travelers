@@ -1,40 +1,50 @@
-<section class="container edit-plan-timeline" id="editPlanTimeline">
+<section class="container edit-plan-timeline" id="editPlanTimeline" ng-switch="model.trip.timeline.status">
 
     <h1 class="title">Make your timeline</h1>
+    <div ng-show="model.error" class="alert alert-danger" role="alert">
+        {{model.error}}
+    </div>
+    <div ng-show="model.success" class="alert alert-success" role="alert">
+        {{model.success}}
+    </div>
 
     <form>
-        <input name="startDate"
+        <input ng-model="model.trip.start"
+               name="startDate"
                id="startDate"
                type="date"
                class="form-control" />
 
-        <input name="endDate"
+        <input ng-model='model.trip.end'
+               name="endDate"
                id="endDate"
                type="date"
                class="form-control" />
+        <h3>{{model.daysBetween(model.trip.start, model.trip.end)}} days</h3>
+        <button  ng-switch-default ng-click="model.setDateRange(model.trip)" class="btn btn-primary">Set Timeline</button>
 
-        <ul class="list-unstyled"> <!-- Generate list amount based on number of days between start and end -->
-          <li>
-            <h4>Day 1</h4>
+        <ul class="days list-unstyled"> <!-- Generate list amount based on number of days between start and end -->
+
+          <li class="days__item panel panel-default" ng-repeat="timeline in model.trip.timeline.list">
+            <h4>Day {{model.daysBetween(model.trip.start, timeline.arrival)}}</h4>
             <label for="arrival">Arrival date</label>
-            <input name="arrival"
+            <input ng-model="timeline.arrival"
+                   name="arrival"
                    id="arrival"
                    type="date"
                    class="form-control">
-            
-            <!-- currently doesn't work because need correct id -->
-            <div jga-search-auto class="ui-widget"> <!-- Populate with cities chosen by user -->
-              <label for="city">Which city will you be in?</label>
-              <input  
-                     name="city" 
-                     id="city" 
+            <div id="selectedCities" jga-search-auto model='model' class="ui-widget">
+              <label for="dest">Which city will you be in?</label>
+              <input ng-model="timeline.city" 
+                     name="dest" 
+                     id="dest" 
                      type="text" 
                      placeholder="city" 
                      class="form-control" />
             </div>
 
-            <div jga-search-auto class="ui-widget"> <!-- Populate with lodging chosen by user -->
-              <label for="lodge">Where will you stay?</label>
+            <!-- <div jga-search-auto class="ui-widget"> Populate with lodging chosen by user -->
+              <!-- <label for="lodge">Where will you stay?</label>
               <input  
                      name="lodge" 
                      id="lodge" 
@@ -48,8 +58,26 @@
                    id="nights"
                    type="number"
                    placeholder="e.g. 1"
-                   class="form-control" />
+                   class="form-control" /> -->
+
+            <nav class="days__item__menu">
+              <button ng-click="model.saveDay(timeline._id, timeline)" class="btn btn-link">
+                <span class="glyphicon glyphicon-ok"></span>
+                Save
+              </button>
+              <button ng-click="model.insertDay(timeline.order)" class="btn btn-link">
+                <span class="glyphicon glyphicon-plus"></span>
+                Insert
+              </button>
+              <button ng-click="model.deleteDay(timeline._id)" class="btn btn-link">
+                <span class="glyphicon glyphicon-remove"></span>
+                Delete
+              </button>
+            </nav>
           </li>
         </ul>
+        <button ng-switch-default ng-click="model.final()" class="btn btn-success btn-block">Done!</button>
+        <button ng-switch-when='COMPLETE' ng-click="model.revert()" class="btn btn-success btn-block">Edit</button>
+        <a href="#!/user/{{model.userId}}" class="btn btn-primary btn-block">Next</a>
     </form>
 </section>

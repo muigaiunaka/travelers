@@ -1,16 +1,17 @@
 <div class="container profile" id="profile">
-	<section class="summary clearfix">
+	<div class="bg"></div>
+	<section class="summary panel clearfix">
 		<div class="summary__edit">
             <a href="#!/user/{{model.userId}}/edit">
                 <span class="glyphicon glyphicon-pencil"></span>
             </a>
         </div>
-		<div class="summary__img col-xs-4">
+		<div class="summary__img">
 			<img src="../../../imgs/bamboo.jpg">
 		</div>
-		<div class="summary__copy col-xs-7">
-			<p class="summary__copy__name">{{model.user.username}}</p>
-			<p class="summary__copy__num-of-trips">{{model.user.trips.length}} trips</p>
+		<div class="summary__copy">
+			<p class="summary__copy__username">{{model.user.username}}</p>
+			<p class="summary__copy__num-of-trips">{{model.trips.length}} trips</p>
 			<p class="summary__copy__gender">{{model.user.gender}}</p>
 			<p class="summary__copy__loc">{{model.user.hometown}}</p>
 		</div>
@@ -27,7 +28,7 @@
 
 	<section class="upcoming">
 		<h3 class="upcoming__title">Upcoming Trips</h3>
-		<ul class="upcoming__trips list-unstyled">
+		<ul class="upcoming__trips list-unstyled panel panel-default">
 			<li class="upcoming__trips__item">
 				<ul class="list-unstyled">
 					<li>
@@ -50,45 +51,73 @@
 	</section>
 
 	<section class="planning">
-		<h3 class="planning__title">Trips in Planning</h3>
-		<a href="#!/user/{{model.user.userId}}/trip/new" class="btn btn-primary btn-block">Plan a new trip!</a>
+		<h3 class="planning__title">Trips in Planning ({{model.trips.length}})</h3>
 		<ul class="planning__plans list-unstyled">
-			<li class="planning__plans__item">
+			<li class="planning__plans__item panel panel-default" ng-repeat="trip in model.trips">
 				<ul class="menu list-unstyled">
 					<li>
 						<span class="glyphicon glyphicon-pencil"></span>
 						Edit
 					</li>
 					<li>
-						<span class="glyphicon glyphicon-remove"></span>
-						Delete
+						<button ng-click="model.deleteTrip(trip._id)" class="btn btn-link link-primary">
+							<span class="glyphicon glyphicon-minus"></span>
+							Delete
+						</button>
 					</li>
 				</ul>
-				<h5>Southeast Asia Trip</h5>
+				<h5>{{trip.name}}</h5>
 				<ul class="plan-in-progress list-unstyled">
-					<li>
-						<span class="glyphicon glyphicon-ok"></span>
-						Countries
+					<li ng-switch="trip.countries.status" class="col-xs-6">
+						<a href="#!/user/{{model.userId}}/trip/{{trip._id}}/edit-plan-country">
+							<span ng-switch-when="INPROGRESS" 
+								  class="glyphicon glyphicon-remove"></span>
+							<span ng-switch-when="COMPLETE" 
+								  class="glyphicon glyphicon-ok"></span>
+							Countries
+						</a>
 					</li>
-					<li>
-						<span class="glyphicon glyphicon-remove"></span>
-						Lodging
+					<!-- <li ng-switch="trip.lodging.status" class="col-xs-6">
+						<a href="#!/user/{{model.userId}}/trip/{{trip._id}}/edit-plan-lodging">
+							<span ng-switch-when="INPROGRESS" 
+								  class="glyphicon glyphicon-remove"></span>
+							<span ng-switch-when="COMPLETE" 
+								  class="glyphicon glyphicon-ok"></span>
+							Lodging
+						</a>
+					</li> -->
+					<li ng-switch="trip.interests.status" class="col-xs-6">
+						<a href="#!/user/{{model.userId}}/trip/{{trip._id}}/edit-plan-interest">
+							<span ng-switch-when="INPROGRESS" 
+								  class="glyphicon glyphicon-remove"></span>
+							<span ng-switch-when="COMPLETE" 
+								  class="glyphicon glyphicon-ok"></span>
+							Interests
+						</a>
 					</li>
-					<li>
-						<span class="glyphicon glyphicon-ok"></span>
-						Interests
+					<li ng-switch="trip.route.status" class="col-xs-6">
+						<a href="#!/user/{{model.userId}}/trip/{{trip._id}}/edit-plan-route">
+							<span ng-switch-when="INPROGRESS" 
+								  class="glyphicon glyphicon-remove"></span>
+							<span ng-switch-when="COMPLETE" 
+								  class="glyphicon glyphicon-ok"></span>
+							Route
+						</a>
 					</li>
-					<li>
-						<span class="glyphicon glyphicon-ok"></span>
-						Route
-					</li>
-					<li>
-						<span class="glyphicon glyphicon-remove"></span>
-						Timeline
+					<li ng-switch="trip.timeline.status" class="col-xs-6">
+						<a href="#!/user/{{model.userId}}/trip/{{trip._id}}/edit-plan-timeline">
+							<span ng-switch-when="INPROGRESS" 
+								  class="glyphicon glyphicon-remove"></span>
+							<span ng-switch-when="COMPLETE" 
+								  class="glyphicon glyphicon-ok"></span>
+							Timeline
+						</a>
 					</li>
 				</ul>
+				<div class="clearfix"></div>
 			</li>
 		</ul>
+		<a href="#!/user/{{model.userId}}/trip/new" class="btn btn-primary btn-block">Plan a new trip!</a>
 	</section>
 
 	<section class="past">

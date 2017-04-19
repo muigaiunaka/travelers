@@ -1,8 +1,8 @@
-<section class="container edit-plan-interest" id="editPlanInterest">
+<section class="container edit-plan-interest" id="editPlanInterest" ng-switch="model.trip.interests.status">
     <h1 class="title">Add activities that interest you</h1>
 
     <aside class="picked-list">
-      <div class="input-group">
+      <!-- <div class="input-group" ng-switch-when='INPROGRESS'>
           <div jga-search-auto class="ui-widget">
 
           <input ng-model="user.username" 
@@ -16,15 +16,14 @@
           <span class="input-group-btn">
               <button type="submit" class="btn btn-success">Add</button>
           </span>
-      </div>
+      </div> -->
       <ul class="list-unstyled">
-        <li>Something</li>
-        <li>Something</li>
+        <li ng-repeat='select in model.trip.interests.list'>{{select.name}}</li>
       </ul>
     </aside>
 
-    <section class="country">
-      <h3 class="country__name">Japan</h3>
+    <section ng-switch-when='INPROGRESS' class="country col-xs-12" ng-repeat="country in model.trip.countries.list">
+      <h3 class="country__name">{{country.name}}</h3>
       <ul class="country__sorting nav nav-pills">
         <li class="nav-item">
           <a class="nav-link active" href="#">Popularity</a>
@@ -36,19 +35,26 @@
           <a class="nav-link" href="#">Alphabetical</a>
         </li>
       </ul>
-      <ul class="country__interests list-unstyled">
-        <li class="country__interests__item">
-          <div class="img-container">
-            <img src="../../../imgs/bamboo.jpg">
-          </div>
+      <ul class="country__interests list-unstyled" jga-selectable id="selectable" model="model" country-pois="country.pois">
+        <li class="country__interests__item col-xs-6 col-sm-3" ng-repeat="poi in country.pois" id="{{poi.id}}">
+            <!-- <img src="#"> -->
           <div class="copy">
-            <span>Myeong-dong</span>
-            <span>Seoul</span>
+            <span class="copy__name">{{poi.name}}</span>
+            <!-- <span class="copy__city">TODO</span> -->
+            <span class="copy__rating">Rating: {{poi.rating}}</span>
           </div>
-          <span class="glyphicon glyphicon-plus-sign"></span>
-          <!-- <span class="glyphicon glyphicon-minus-sign"></span> -->
+          
+          <!-- <div ng-switch-when='INPROGRESS'> -->
+            <div ng-switch='poi.status'>
+              <span ng-switch-default class="glyphicon glyphicon--green glyphicon-plus-sign"></span>
+              <span ng-switch-when='SELECTED' class="glyphicon glyphicon--red glyphicon-minus-sign"></span>
+            </div>
+          <!-- </div> -->
         </li>
       </ul>
     </section>
+    <button ng-switch-when='INPROGRESS' ng-click="model.final()" class="btn btn-success btn-block">Done!</button>
+    <button ng-switch-when='COMPLETE' ng-click="model.revert()" class="btn btn-success btn-block">Edit</button>
+    <a href="#!/user/{{model.userId}}/trip/{{model.tripId}}/edit-plan-route" class="btn btn-primary btn-block">Next</a>
 
 </section>

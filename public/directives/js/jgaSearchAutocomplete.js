@@ -3,10 +3,32 @@
 		.module("appDirectives")
 		.directive("jgaSearchAuto", jgaSearchAuto);
 
-	function jgaSearchAuto() {
+	function jgaSearchAuto($routeParams, RESTcountry, TripService) {
 		function linkFunction(scope, element) {
-
-			var availableTags = ["Japan", "South Korea", "Thailand"];
+			var userId = $routeParams.uid;
+			var tripId = $routeParams.tid;
+			var availableTags = [];
+			var selectedTerms = ["hello"];
+			var fillInput = false;
+			var el;
+			switch ($(element).attr('id')) {
+				case "selectedCities":
+					el = $(element).find('#dest');
+					fillInput = true;
+					availableTags = scope.model.destinations;
+					break;
+				default:
+					el = $('#search');
+					fillInput = false;
+					RESTcountry
+						.getAll()
+						.then(function(response) {
+							var temp = response.data;
+							for(var c in temp) {
+								availableTags.push(temp[c].name);
+							}
+						});
+			}
 
 		    function split( val ) {
 		      return val.split( /,\s*/ );
@@ -15,7 +37,7 @@
 		      return split( term ).pop();
 		    }
 
-		    $('#search').on( "keydown", function( event ) {
+		    $(el).on( "keydown", function( event ) {
 		        if ( event.keyCode === $.ui.keyCode.TAB &&
 		            $( this ).autocomplete( "instance" ).menu.active ) {
 		          event.preventDefault();
@@ -33,21 +55,44 @@
 		          return false;
 		        },
 		        select: function( event, ui ) {
-		          var terms = split( this.value );
-		          // remove the current input
-		          terms.pop();
-		          // add the selected item
-		          terms.push( ui.item.value );
-		          // add placeholder to get the comma-and-space at the end
-		          terms.push( "" );
-		          this.value = terms.join( ", " );
-		          return false;
-		        }
+		          if (fillInput) {
+		          	this.value = ui.item.value;
+		          	return false;
+		          } else {
+		          		console.log('yes');
+			          var terms = split( this.value );
+			          // remove the current input
+			          terms.pop();
+			          // add the selected item
+		          	  TripService
+		          		.findTripById(tripId)
+		          		.then(function(trip) {
+		          			var selectedTerms = trip.countries.list;
+		         			if (selectedTerms.map((e) => (e.name)).indexOf(ui.item.value) == -1) {
+			          			var newTrip = trip;
+			          			newTrip.countries.list.push({
+			          				name: ui.item.value
+			          			});
+			          			TripService
+			          				.updateTrip(tripId, newTrip)
+			          				.then(function(status) {
+			          					//make sure updates to the db are reflected in the view
+			          					scope.model.update();
+			          				});
+		          			}
+		          	  });
+			          // add placeholder to get the comma-and-space at the end
+			          terms.push( "" );
+			          this.value = terms.join( ", " );
+			          return false;
+			        }
+			    }
 		      });
 		}
 
 		return {
-			link: linkFunction
+			link: linkFunction,
+			scope: { model: '=' }
 		}
 	}
 })();

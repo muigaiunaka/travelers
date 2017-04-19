@@ -1,20 +1,25 @@
 .profile {
+	.bg { @include bgColor($ltePaleGrn); }
 	.summary {
-		background-color: $dirtyBrown;
+		padding: 0px 20px;
 		position: relative;
 		&__img {
-			display: inline-block;
+			display: block;
 			position: relative;
+			top: -30px;
 			height: 100px;
 			width: 100px;
 			overflow: hidden;
 			border-radius: 50%;
+			margin: 0 auto;
 			img {
 				@include posCenter(absolute, 50%, 50%);
+				max-height: 100%;
 			}
 		}
 		&__copy {
-			&__name {}
+			text-align: center;
+			&__username { font-weight: bold; }
 			&__num-of-trips {}
 			&__gender {}
 			&__loc {}
@@ -31,15 +36,23 @@
 		}
 	}
 	.in-progress {
-		margin-top: 20px;
+		margin: 20px 0 40px;
 		padding: 0px 15px 10px;
-		&__title {}
+		&__title {
+			color: $drkGreen;
+			font-weight: bold;
+		}
 		&__latest {}
 		&__cost {}
 	}
 	.upcoming {
-		&__title {}
+		margin-bottom: 40px;
+		&__title {
+			color: $paleGreen;
+			font-weight: bold;
+		}
 		&__trips {
+			padding: 10px 15px;
 			&__item {
 				ul {
 					li {}
@@ -50,22 +63,45 @@
 		}
 	}
 	.planning {
-		&__title {}
+		margin-bottom: 40px;
+		&__title {
+			color: $paleGreen;
+			font-weight: bold;
+		}
 		&__plans {
+			margin-bottom: 20px;
 			&__item {
+				padding: 10px 15px;
+				position: relative;
 				.menu {
-					li {}
+					// position: absolute;
+					// right: 0;
+					li {
+						display: inline-block;
+						margin: 0px 5px;
+					}
 				}
 			}
-			h5 {}
-			.plan-progress {
-				li {}
+			h5 {
+				font-weight: bold;
+				display: block;
+			}
+			.plan-in-progress {
+				li {
+					a { color: $drkerGrn; }
+					.glyphicon-ok { color: $paleGreen; }
+					.glyphicon-remove { color: $red;}
+				}
 			}
 		}
 	}
 	.past {
-		&__title {}
-		&__last {
+		margin-bottom: 40px;
+		&__title {
+			color: $paleGreen;
+			font-weight: bold;
+		}
+		&__list {
 			.trip {
 				display: block;
 				margin: 10px auto;
@@ -80,6 +116,7 @@
 					height: 100px;
 					overflow: hidden;
 					img {
+						width: 100%;
 						@include posCenter(absolute, 50%, 50%);
 					}
 				}

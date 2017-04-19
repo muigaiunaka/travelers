@@ -23,20 +23,19 @@ module.exports = function () {
 
     function createTripFromBlank(userId, trip) {
         var deferred = q.defer();
-
-        tripModel.create(trip, function(err, p) {
+        tripModel.create(trip, function(err, t) {
             if (err) {
                 deferred.reject(new Error("Error!!"));
             } else {
                 model.userModel
                     .findUserById(userId)
-                    .then(function(w) {
-                        p._user = w._id;
-                        p.save();
+                    .then(function(u) {
+                        t._user = u._id;
+                        t.save();
 
-                        w.trips.push(p);
-                        w.save();
-                        deferred.resolve(p);
+                        u.trips.push(t);
+                        u.save();
+                        deferred.resolve(t);
                     });
             }
         });
@@ -90,14 +89,14 @@ module.exports = function () {
     
     function deleteTrip(tripId) {
         var deferred = q.defer();
-        tripModel.findById(tripId, function(err, p) {
-            if(p) {
+        tripModel.findById(tripId, function(err, t) {
+            if(t) {
                 model.userModel
-                    .findUserById(p._user)
-                    .then(function(w) {
-                        var index = w.trips.indexOf(tripId);
-                        w.trips.splice(index, 1);
-                        w.save();
+                    .findUserById(t._user)
+                    .then(function(u) {
+                        var index = u.trips.indexOf(tripId);
+                        u.trips.splice(index, 1);
+                        u.save();
 
                         tripModel.remove({_id: tripId})
                             .then(function(status) {

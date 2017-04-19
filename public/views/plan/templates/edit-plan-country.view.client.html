@@ -1,12 +1,14 @@
-<section class="container edit-plan-country" id="editPlanCountry">
-
-    <h1 class="title">Choose or search for countries</h1>
+<section class="container edit-plan-country" id="editPlanCountry" ng-switch="model.trip.countries.status">
+    <div class="bg"></div>
+    <h1 ng-switch-when='INPROGRESS' class="title">Choose or search for countries</h1>
+    <h1 ng-switch-when='COMPLETE' class="title">Countries traveling to:</h1>
 
     <form>
-        <div class="input-group">
-            <div jga-search-auto class="ui-widget">
+        <div ng-switch-when='INPROGRESS' class="input-group">
+            <div jga-search-auto model="model" class="ui-widget">
 
-              <input ng-model="user.username" 
+              <input 
+                     ng-model="chosenPlace"
                      name="search" 
                      id="search" 
                      type="text" 
@@ -15,8 +17,19 @@
             </div>
 
             <span class="input-group-btn">
-                <button type="submit" class="btn btn-success">Explore!</button>
+                <button type="submit" class="btn btn-primary" ng-click="model.update()">Add</button>
             </span>
         </div>
     </form>
+    <ul class="selected-countries list-unstyled">
+        <li class="selected-countries__item" ng-repeat="country in model.trip.countries.list">
+            {{country.name}}
+            <button ng-click="model.removeCountry(country._id)" type="submit" class="btn btn-primary">
+                <span class="glyphicon glyphicon-remove"></span>
+            </button>
+        </li>
+    </ul>
+    <button ng-switch-when='INPROGRESS' ng-click="model.final()" class="btn btn-success btn-block">Done!</button>
+    <button ng-switch-when='COMPLETE' ng-click="model.revert()" class="btn btn-success btn-block">Edit</button>
+    <a href="#!/user/{{model.userId}}/trip/{{model.tripId}}/edit-plan-interest" class="btn btn-primary btn-block">Next</a>
 </section>
