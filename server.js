@@ -25,14 +25,15 @@ app.use(bodyParser.json({limit:'50mb'}));
 // configure a public directory to host static content
 app.use(express.static(__dirname + '/public'));
 
-// var connectionString = 'mongodb://127.0.0.1:27017/globetrotter';
+var connectionString = 'mongodb://127.0.0.1:27017/globetrotter';
 
 if(process.env.MLAB_USERNAME) {
     connectionString = process.env.MONGODB_URI
 }
 
 var mongoose = require("mongoose");
-mongoose.createConnection(process.env.MONGODB_URI);
+console.log(mongoose.createConnection(connectionString));
+mongoose.createConnection(connectionString);
 
 require ("./app/app.js")(app);
 
