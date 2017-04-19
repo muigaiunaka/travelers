@@ -1,10 +1,5 @@
 module.exports = function(app) {
-	var model = require('./models/model.server.js')();
-
-    require ("./services/user.service.server.js")(app, model);
-    // require ("./services/plan.service.server.js")(app, model);
-    require ("./services/trip.service.server.js")(app, model);
-
+	
     var connectionString = 'mongodb://127.0.0.1:27017/globetrotter';
 
     if(process.env.MLAB_USERNAME) {
@@ -17,4 +12,11 @@ module.exports = function(app) {
 
     var mongoose = require("mongoose");
     mongoose.createConnection(connectionString);
+
+
+	var model = require('./models/model.server.js')();
+
+    require ("./services/user.service.server.js")(app, model);
+    // require ("./services/plan.service.server.js")(app, model);
+    require ("./services/trip.service.server.js")(app, model);
 };
