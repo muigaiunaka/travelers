@@ -32,8 +32,8 @@ if(process.env.MLAB_USERNAME) {
 }
 
 var mongoose = require("mongoose");
-console.log(mongoose.createConnection(connectionString));
-mongoose.createConnection(connectionString);
+console.log(mongoose.connect(connectionString));
+mongoose.connect(connectionString);
 
 require ("./app/app.js")(app);
 
