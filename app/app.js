@@ -5,7 +5,6 @@ module.exports = function(app) {
     if(process.env.MLAB_USERNAME) {
         connectionString = process.env.MONGODB_URI
     }
-    console.log(connectionString);
 
     var mongoose = require("mongoose");
     mongoose.createConnection(connectionString);
