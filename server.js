@@ -32,7 +32,10 @@ if(process.env.MLAB_USERNAME) {
 }
 
 var mongoose = require("mongoose");
+console.log(connectionString);
 mongoose.createConnection(connectionString);
+var db = mongoose.connection;
+db.once("open", function() {console.log("Globetrotter open")});
 
 require ("./app/app.js")(app);
 
