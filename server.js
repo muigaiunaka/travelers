@@ -32,12 +32,9 @@ if(process.env.MLAB_USERNAME) {
 }
 
 var mongoose = require("mongoose");
-console.log(connectionString);
-console.log(mongoose.createConnection(connectionString));
 mongoose.createConnection(connectionString);
 
 require ("./app/app.js")(app);
-// require ("./assignment/app.js")(app); //executes the function in server app
 
 var port = process.env.PORT || 3000;
 
