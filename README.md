@@ -38,3 +38,5 @@ To test this project locally, please use git to clone the repository: git clone 
 Once the project has been cloned, go to the travelers folder, and from the command line, start mongodb: mongod.  Then start the server: heroku local.
 
 Currently working on CORS issues.  Please download and enable this chrome extension when viewing the project: https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi?hl=en
+
+UPDATE: The CORS issue should be fixed (so go ahead and try without), but if not, please download the chrome extension mentioned above.
