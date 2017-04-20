@@ -4,6 +4,11 @@
 		width: 0;
 		height: 0;
 	}
+	#map {
+    	height: 400px;
+    	width: 100%;
+    	pointer-events: none;
+	}
 	.summary {
 		background-color: $dirtyBrown;
 		display: block;

@@ -1,24 +1,18 @@
 <div class="container trip-review" id="tripReview">
 	<svg class="map"></svg>
+	<div id="map"></div>
 	<section class="summary">
-		<h2 class="summary__title">Walopee's Trip</h2>
+		<a href="#!/user/{{model.user._id}}" class="btn btn-link">{{model.user.username}}</a>
+		<h2 class="summary__title">{{model.trip.name}}</h2>
 		<ul class="summary__countries list-unstyled">
-			<li class="summary__countries__item">
+			<li class="summary__countries__item" ng-repeat="country in model.trip.countries.list">
 				<svg></svg>
-				<span>Japan</span>
-			</li>
-			<li class="summary__countries__item">
-				<svg></svg>
-				<span>South Korea</span>
-			</li>
-			<li class="summary__countries__item">
-				<svg></svg>
-				<span>Thailand</span>
+				<span>{{country.name}}</span>
 			</li>
 		</ul>
-		<div class="summary__length">27 days</div>
-		<div class="summary__cities">14 cities</div>
-		<ul class="summary__pack list-unstyled">
+		<div class="summary__length">{{model.daysBetween(model.trip.start, model.trip.end)}} days</div>
+		<div class="summary__cities">{{model.trip.route.list.length}} cities</div>
+		<!-- <ul class="summary__pack list-unstyled">
 			<li class="summary__pack__item">2 shirts</li>
 			<li class="summary__pack__item">2 pants</li>
 			<li class="summary__pack__item">30oz water bottle</li>
@@ -26,7 +20,7 @@
 			<li class="summary__pack__item">a sense of adventure</li>
 			<li class="summary__pack__item">a sense of adventure</li>
 		</ul>
-		<svg class="summary__cost"></svg>
+		<svg class="summary__cost"></svg> -->
 	</section>
 
 	<section class="city">

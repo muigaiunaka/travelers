@@ -35,11 +35,11 @@
 						vm.routes = list;
 					}
 
-					// GoogleService
-					// 	.generateMap()
-					// 	.then(function(map) {
+					GoogleService
+						.generateMap()
+						.then(function(map) {
 							vm.initMap();
-						// });
+						});
 				});
 		}
 		init();
