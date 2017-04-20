@@ -4,6 +4,7 @@ console.log("Main Scripts Loaded");
 /* Dependencies */
 require ('angular');
 require ('angular-route');
+require ('cors');
 
 /* Stylesheets */
 require ('../styles/main.scss');

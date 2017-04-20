@@ -59,7 +59,6 @@
 		          	this.value = ui.item.value;
 		          	return false;
 		          } else {
-		          		console.log('yes');
 			          var terms = split( this.value );
 			          // remove the current input
 			          terms.pop();
