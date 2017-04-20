@@ -1100,12 +1100,7 @@ module.exports = angular;
 		function init() {
 			TripService.findTripById(vm.tripId).then(function (trip) {
 				vm.trip = trip;
-				vm.trip.start = new Date(trip.start);
-				vm.trip.end = new Date(trip.end);
-				for (var day in vm.trip.timeline.list) {
-					var list = vm.trip.timeline.list;
-					list[day].arrival = new Date(list[day].arrival);
-				}
+				formatDate(vm.trip, trip);
 				for (var p in vm.trip.route.list) {
 					vm.destinations.push(vm.trip.route.list[p].place.formatted_address);
 				}
@@ -1146,16 +1141,29 @@ module.exports = angular;
 			for (var day in vm.trip.timeline.list) {
 				vm.trip.timeline.list[day].order = day;
 			}
-			TripService.updateTrip(vm.tripId, vm.trip).then(function (status) {});
+			TripService.updateTrip(vm.tripId, vm.trip).then(function (status) {
+				TripService.findTripById(vm.tripId).then(function (trip) {
+					vm.trip = trip;
+					formatDate(vm.trip, trip);
+				});
+			});
 		}
 
 		function saveDay(dayId, day) {
+			for (var i = 0; i < vm.trip.timeline.list.length; i++) {
+				vm.trip.timeline.list[i].order = i;
+			}
 			var newTrip = vm.trip;
 			var i = newTrip.timeline.list.map(function (e) {
 				return e._id;
 			}).indexOf(dayId);
 			newTrip.timeline.list[i] = day;
-			TripService.updateTrip(vm.tripId, newTrip).then(function (status) {});
+			TripService.updateTrip(vm.tripId, newTrip).then(function (status) {
+				TripService.findTripById(vm.tripId).then(function (trip) {
+					vm.trip = trip;
+					formatDate(vm.trip, trip);
+				});
+			});
 		}
 
 		function insertDay(dayId) {
@@ -1171,7 +1179,21 @@ module.exports = angular;
 			for (var day in vm.trip.timeline.list) {
 				vm.trip.timeline.list[day].order = day;
 			}
-			TripService.updateTrip(vm.tripId, newTrip).then(function (status) {});
+			TripService.updateTrip(vm.tripId, newTrip).then(function (status) {
+				TripService.findTripById(vm.tripId).then(function (trip) {
+					vm.trip = trip;
+					formatDate(vm.trip, trip);
+				});
+			});
+		}
+
+		function formatDate(t1, t2) {
+			t1.start = new Date(t2.start);
+			t1.end = new Date(t2.end);
+			for (var day in t1.timeline.list) {
+				var list = t1.timeline.list;
+				list[day].arrival = new Date(list[day].arrival);
+			}
 		}
 
 		function update() {
