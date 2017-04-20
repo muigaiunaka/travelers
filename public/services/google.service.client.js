@@ -3,7 +3,7 @@
 		.module("TravelApp")
 		.service("GoogleService", GoogleService);
 
-	function GoogleService($http, $sce) {
+	function GoogleService($http) {
 
 		var googleConfig = {
 			placesKey: 'AIzaSyBynPLVkqYKWTGTvUC6mRkOBRDqizpi5Wc',
