@@ -1405,6 +1405,7 @@ module.exports = angular;
         vm.update = update;
         vm.remove = remove;
         vm.deleteTrip = deleteTrip;
+        vm.isComplete = isComplete;
 
         function init() {
             $('body').removeAttr('class');
@@ -1439,6 +1440,10 @@ module.exports = angular;
                     vm.trips = trips;
                 });
             });
+        }
+
+        function isComplete(trip) {
+            return trip.countries.status == 'COMPLETE' && trip.interests.status == 'COMPLETE' && trip.route.status == 'COMPLETE' && trip.timeline.status == 'COMPLETE';
         }
 
         var user = UserService.findUserById(vm.userId);

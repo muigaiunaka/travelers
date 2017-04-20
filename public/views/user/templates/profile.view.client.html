@@ -65,6 +65,11 @@
 							Delete
 						</button>
 					</li>
+					<li ng-show="model.isComplete(trip)">
+						<a href="#!/user/{{model.userId}}/trip/{{trip._id}}" class="btn btn-primary">
+							 Review Trip
+						</a>
+					</li>
 				</ul>
 				<h5>{{trip.name}}</h5>
 				<ul class="plan-in-progress list-unstyled">
