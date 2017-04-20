@@ -25,7 +25,7 @@
 
         <ul class="days list-unstyled"> <!-- Generate list amount based on number of days between start and end -->
 
-          <li class="days__item panel panel-default" ng-repeat="timeline in model.trip.timeline.list">
+          <li class="days__item panel panel-default" ng-repeat="timeline in model.trip.timeline.list track by $index">
             <h4>Day {{model.daysBetween(model.trip.start, timeline.arrival)}}</h4>
             <label for="arrival">Arrival date</label>
             <input ng-model="timeline.arrival"

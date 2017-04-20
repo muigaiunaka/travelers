@@ -35,11 +35,11 @@
 						vm.routes = list;
 					}
 
-					GoogleService
-						.generateMap()
-						.then(function(map) {
+					// GoogleService
+					// 	.generateMap()
+					// 	.then(function(map) {
 							vm.initMap();
-						});
+						// });
 				});
 		}
 		init();
@@ -49,10 +49,12 @@
 			var interests = vm.trip.interests.list;
 			var places = vm.trip.route.list;
 
+			// Create a new map
 			vm.map = new google.maps.Map(document.getElementById('map'), {
 				zoom: 4
 			});
 
+			// If user has selected interests, add them to the map
 			for (var i = 0; i < interests.length; i++) {
                 var marker = new google.maps.Marker({
                     map: vm.map,
@@ -69,6 +71,8 @@
                 bounds.extend(interests[i].geometry.location);
                 vm.markers.push(marker);
             }
+
+            // if user has routes already, place them on map
             if (places[0].place != null) {
 	            for (var i = 0; i < places.length; i++) {
 	                var marker = new google.maps.Marker({
@@ -81,6 +85,7 @@
 	        }
 			vm.map.fitBounds(bounds);
 
+			// Draw routes if user already has selected places
             if (places.length != 0) {
 	            function renderDirections(result, index) {
 	              var directionsRenderer = new google.maps.DirectionsRenderer;
@@ -105,11 +110,13 @@
 	            }
 	            for (var i = 0; i < places.length; i++) {
 	            	var input = '#'+i+' input';
-	            	$(input).val(places[i].place.formatted_address);
-	                if ((i+1) != places.length) {
-	                    requestDirections(places[i].place.geometry.location,
-	                        places[i+1].place.geometry.location, i);
-	                }
+	            	if (places[i].place) {
+		            	$(input).val(places[i].place.formatted_address);
+		                if ((i+1) != places.length) {
+		                    requestDirections(places[i].place.geometry.location,
+		                        places[i+1].place.geometry.location, i);
+		                }
+	            	}
 	            }
 	        }
 	    }
@@ -146,8 +153,6 @@
 	    		list[i].id = i;
 	    	}
 	    	vm.routes = list;
-			// console.log(list);
-	    	// vm.updateMap($(routeItem).find('input'));
 	    	google.maps.event.trigger(vm.gPlace, 'place_changed');
 
 	    }

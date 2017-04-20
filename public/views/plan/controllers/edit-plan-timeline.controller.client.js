@@ -76,7 +76,6 @@
 		function saveDay(dayId, day) {
 			var newTrip = vm.trip;
 			var i = newTrip.timeline.list.map((e)=> e._id).indexOf(dayId);
-
 			newTrip.timeline.list[i] = day;
 			TripService
 				.updateTrip(vm.tripId, newTrip)
