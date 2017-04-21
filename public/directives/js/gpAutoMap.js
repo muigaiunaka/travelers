@@ -42,13 +42,13 @@
                 var index;
 
                 // get position for newly added input
-                index = parseInt($(element).parents('li.route__item').attr('id')); 
-
+                index = parseInt($(element).parents('li.route__item').attr('id'));
                 if (scope.model.trip.route.list[index] != null) {
-
-                    // get place details for new input value
-                    scope.model.routes[index].place = scope.gPlace.getPlace();
+                    if (!scope.model.removed) {
+                        scope.model.routes[index].place = scope.gPlace.getPlace();
+                    }
                 }
+                scope.model.removed = false;
 
                 // Draw markers for interests
                 for (var i = 0; i < interests.length; i++) {
@@ -64,7 +64,6 @@
                     bounds.extend(interests[i].geometry.location);
                     scope.model.markers.push(marker);
                 }
-
                 // Draw markers for places
                 for (var i = 0; i < places.length; i++) {
                     var marker = new google.maps.Marker({

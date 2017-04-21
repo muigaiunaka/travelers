@@ -38,6 +38,7 @@
 					GoogleService
 						.generateMap()
 						.then(function(map) {
+							vm.routes = vm.trip.route.list;
 							vm.initMap();
 						});
 				});
@@ -122,6 +123,7 @@
 	    }
 
 	    function addWaypoint(e) {
+	    	vm.removed = false;
 	    	var routeItem = $(e.currentTarget).parent();
 	    	if ($(routeItem).find('input').val().length != 0) {
 		    	var count = $('ul.route').children('li').length;
@@ -144,16 +146,24 @@
 	    	var routeItem = $(e.currentTarget).parent();
 	    	var count = $('ul.route').children('li').length;
 	    	var list = vm.trip.route.list;
+	    	var input = $(routeItem).find('input').val();
 			var init = parseInt($(routeItem).attr('id'));
 			vm.removed = list.splice(init, 1);
-			var markerId = vm.trip.interests.list.length + init; // lol this is so jank
-			vm.markers[markerId].setMap(null);
+			if (input != '') {
+				var markerId = vm.trip.interests.list.length + init; // lol this is so jank
+				vm.markers[markerId].setMap(null);
+		    	for(var i = 0; i < count-1; i++) {
+		    		list[i].id = i;
+		    	}
+		    	vm.routes = list;
+		    	google.maps.event.trigger(vm.gPlace, 'place_changed');
+			} else {
+				for(var i = 0; i < count-1; i++) {
+		    		list[i].id = i;
+		    	}
+		    	vm.routes = list;
+		    }
 
-	    	for(var i = 0; i < count-1; i++) {
-	    		list[i].id = i;
-	    	}
-	    	vm.routes = list;
-	    	google.maps.event.trigger(vm.gPlace, 'place_changed');
 
 	    }
 
