@@ -123,22 +123,26 @@
 	    }
 
 	    function addWaypoint(e) {
-	    	vm.removed = false;
-	    	var routeItem = $(e.currentTarget).parent();
-	    	if ($(routeItem).find('input').val().length != 0) {
-		    	var count = $('ul.route').children('li').length;
-		    	var list = vm.trip.route.list;
-		    	var temp = { id: count };
-				var init = $(routeItem).attr('id');
+	    	if ($('ul.route').children().length < 11) {
+		    	vm.removed = false;
+		    	var routeItem = $(e.currentTarget).parent();
+		    	if ($(routeItem).find('input').val().length != 0) {
+			    	var count = $('ul.route').children('li').length;
+			    	var list = vm.trip.route.list;
+			    	var temp = { id: count };
+					var init = $(routeItem).attr('id');
 
-		    	list.splice(parseInt(init)+1, 0, temp);
+			    	list.splice(parseInt(init)+1, 0, temp);
 
-		    	for(var i = 0; i < count+1; i++) {
-		    		list[i].id = i;
+			    	for(var i = 0; i < count+1; i++) {
+			    		list[i].id = i;
+			    	}
+			    	vm.routes = list;
+		    	} else {
+		    		$(routeItem).find('input').focus();
 		    	}
-		    	vm.routes = list;
-	    	} else {
-	    		$(routeItem).find('input').focus();
+		    } else {
+		    	vm.error = 'Oops!  Unfortunately, the limit is 10 cities right now.  Working on this issue.'
 	    	}
 	    }
 

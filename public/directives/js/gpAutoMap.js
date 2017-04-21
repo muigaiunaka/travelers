@@ -76,13 +76,23 @@
                 scope.model.map.fitBounds(bounds);
 
                 function renderDirections(result, index) {
-                  var directionsRenderer = new google.maps.DirectionsRenderer;
-                  directionsRenderer.setMap(scope.model.map);
-                  directionsRenderer.setDirections(result);
-                  scope.model.dirDisplay.push(directionsRenderer);
-                  var duration = directionsRenderer.directions.routes[0].legs[0].duration.text;
-                  var temp = '#'+index;
-                  $(temp).find('.route__item__dir').html(duration);
+                    var options = {
+                      preserveViewport: true
+                    }
+                    var directionsRenderer = new google.maps.DirectionsRenderer(options);
+                    directionsRenderer.setMap(scope.model.map);
+                    if (result) {
+                        directionsRenderer.setDirections(result);
+                        scope.model.dirDisplay.push(directionsRenderer);
+                        var duration = directionsRenderer.directions.routes[0].legs[0].duration.text;
+                        var temp = '#'+index;
+                        $(temp).find('.route__item__dir').html(duration);
+                    } else {
+                        scope.model.dirDisplay.push(directionsRenderer);
+                        var duration = 'No Route Found!';
+                        var temp = '#'+index;
+                        $(temp).find('.route__item__dir').html(duration);
+                    }
 
                 }
 
@@ -92,14 +102,15 @@
                     origin: start,
                     destination: end,
                     travelMode: google.maps.DirectionsTravelMode.DRIVING // TRANSIT
-                  }, function(result) {
+                  }, function(result, status) {
+                    /* NOTE: If creating more than 10 routes, returns OVER_QUERY_LIMIT status */
                     renderDirections(result, index);
                   });
                 }
                 for (var i = 0; i < places.length; i++) {
                     if ((i+1) != places.length) {
-                        requestDirections(places[i].place.geometry.location,
-                            places[i+1].place.geometry.location, i);
+                        requestDirections(places[i].place.formatted_address,
+                            places[i+1].place.formatted_address, i);
                     }
                 }
                 TripService

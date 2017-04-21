@@ -1,6 +1,9 @@
 <section class="container edit-plan-route" id="editPlanRoute" ng-switch='model.trip.route.status'>
 
     <h1 class="title">Choose or search for cities</h1>
+    <div ng-show="model.error" class="alert alert-danger" role="alert">
+        {{model.error}}
+    </div>
     <form>
       <ul class="route list-unstyled">
         <li class="route__item" ng-repeat="route in model.trip.route.list" id="{{route.id}}">
