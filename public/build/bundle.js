@@ -1323,17 +1323,21 @@ module.exports = angular;
 (function () {
 	angular.module("TravelApp").controller("tripReviewController", tripReviewController);
 
-	function tripReviewController($routeParams, UserService, TripService) {
+	function tripReviewController($routeParams, UserService, TripService, $location) {
 		var vm = this;
 		vm.userId = $routeParams.uid;
 		vm.tripId = $routeParams.tid;
 		vm.daysBetween = daysBetween;
 		vm.initMap = initMap;
+		vm.final = final;
+		vm.revert = revert;
+		vm.travelTimes = [];
 
 		function init() {
 			TripService.findTripById(vm.tripId).then(function (trip) {
 				vm.trip = trip;
 				vm.initMap();
+				formatDate(vm.trip, trip);
 
 				UserService.findUserById(vm.trip._user).then(function (user) {
 					vm.user = user;
@@ -1397,6 +1401,14 @@ module.exports = angular;
 					var duration = directionsRenderer.directions.routes[0].legs[0].duration.text;
 					var temp = '#' + index;
 					$(temp).find('.route__item__dir').html(duration);
+					var temp = {
+						start: directionsRenderer.directions.routes[0].legs[0].start_address,
+						end: directionsRenderer.directions.routes[0].legs[0].end_address,
+						duration: duration
+					};
+					TripService.findTripById(vm.tripId).then(function (trip) {
+						vm.travelTimes[index] = temp; // couldn't find a better way to make this update
+					});
 				};
 
 				var requestDirections = function requestDirections(start, end, index) {
@@ -1432,6 +1444,31 @@ module.exports = angular;
 		function daysBetween(startDate, endDate) {
 			var millisecondsPerDay = 24 * 60 * 60 * 1000;
 			return (treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay + 1;
+		}
+
+		function formatDate(t1, t2) {
+			t1.start = new Date(t2.start);
+			t1.end = new Date(t2.end);
+			for (var day in t1.timeline.list) {
+				var list = t1.timeline.list;
+				list[day].arrival = new Date(list[day].arrival);
+			}
+		}
+
+		function final() {
+			var newTrip = vm.trip;
+			newTrip.state = 'UPCOMING';
+			TripService.updateTrip(vm.tripId, newTrip).then(function (res) {
+				$location.url("/user/" + vm.userId);
+			});
+		}
+
+		function revert() {
+			var newTrip = vm.trip;
+			newTrip.state = 'PLANNING';
+			TripService.updateTrip(vm.tripId, newTrip).then(function (res) {
+				$location.url("/user/" + vm.userId);
+			});
 		}
 	}
 })();
@@ -1535,6 +1572,7 @@ module.exports = angular;
         vm.remove = remove;
         vm.deleteTrip = deleteTrip;
         vm.isComplete = isComplete;
+        vm.formatDate = formatDate;
 
         function init() {
             $('body').removeAttr('class');
@@ -1573,6 +1611,10 @@ module.exports = angular;
 
         function isComplete(trip) {
             return trip.countries.status == 'COMPLETE' && trip.interests.status == 'COMPLETE' && trip.route.status == 'COMPLETE' && trip.timeline.status == 'COMPLETE';
+        }
+
+        function formatDate(date) {
+            return new Date(date);
         }
 
         var user = UserService.findUserById(vm.userId);

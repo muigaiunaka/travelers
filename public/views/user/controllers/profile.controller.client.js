@@ -10,6 +10,7 @@
         vm.remove = remove;
         vm.deleteTrip = deleteTrip;
         vm.isComplete = isComplete;
+        vm.formatDate = formatDate;
 
 		function init() {
             $('body')
@@ -64,6 +65,10 @@
                    && trip.interests.status == 'COMPLETE'
                    && trip.route.status == 'COMPLETE'
                    && trip.timeline.status == 'COMPLETE';
+        }
+
+        function formatDate(date) {
+            return new Date(date);
         }
 
         var user = UserService.findUserById(vm.userId);

@@ -1,4 +1,4 @@
-<div class="container trip-review" id="tripReview">
+<div class="container trip-review" id="tripReview" ng-switch='model.trip.state'>
 	<svg class="map"></svg>
 	<div id="map"></div>
 	<section class="summary">
@@ -23,42 +23,48 @@
 		<svg class="summary__cost"></svg> -->
 	</section>
 
-	<section class="city">
-		<img class="city__bg" src="../../../imgs/bamboo.jpg" />
-		<span class="city__arrival-date">4/2/2017</span>
-		<h3 class="city__name">San Francisco, California (USA)</h3>
-		<svg class="city__rating"></svg>
-		<ul class="city__activity list-unstyled">
-			<li class="city__activity__item">
-				<div class="img-container">
-					<img src="../../../imgs/bamboo.jpg">
-				</div>
-				<span>Myeong-dong</span>
-				<svg></svg>
-			</li>
-		</ul>
-		<ul class="city__lodging list-unstyled">
-			<li class="city__lodging__item">Guest House</li>
-		</ul>
-		<svg class="city__cost"></svg>
-	</section>
+	<div id="tripLeg" ng-repeat="day in model.trip.timeline.list"> <!-- repeat for timeline -->
+		<section class="city">
+			<img class="city__bg" src="../../../imgs/bamboo.jpg" />
+			<span class="city__arrival-date">{{day.arrival.getMonth()}}/{{day.arrival.getDate()}}/{{day.arrival.getFullYear()}}</span>
+			<h3 class="city__name">{{day.city}}</h3>
+			<h5 class="city__num-of-days">{{model.daysBetween(day.arrival, model.trip.timeline.list[$index + 1].arrival)}} days</h5>
+			<!-- <svg class="city__rating"></svg>
+			<ul class="city__activity list-unstyled">
+				<li class="city__activity__item">
+					<div class="img-container">
+						<img src="../../../imgs/bamboo.jpg">
+					</div>
+					<span>Myeong-dong</span>
+					<svg></svg>
+				</li>
+			</ul>
+			<ul class="city__lodging list-unstyled">
+				<li class="city__lodging__item">Guest House</li>
+			</ul>
+			<svg class="city__cost"></svg> -->
+		</section>
 
-	<section class="travel">
-		<svg class="travel__icon"></svg>
-		<div class="travel__airport">
-			<p>Depart</p>
-			<h3>San Francisco International Airport</h3>
-			<p>Departure 1:20 pm</p>
-		</div>
-		<div class="travel__airport">
-			<p>Arrival</p>
-			<h3>Incheon International Airport</h3>
-			<p>Arrival 7:20 pm (+1 day)</p>
-		</div>
-		<div class="travel__details">
-			<p>Airline: Korean Air</p>
-			<p>Ticket Price: $729</p>
-		</div>
-		<h3 class="travel__length">Travel Time: 11 hrs 56 mins</h3>
-	</section>
+		<section class="travel" ng-if="!$last">
+			<svg class="travel__icon"></svg>
+			<div class="travel__airport">
+				<p>Depart</p>
+				<h4>{{model.travelTimes[$index].start}}</h4>
+				<!-- <p>{{$index}}</p> -->
+			</div>
+			<div class="travel__airport">
+				<p>Arrival</p>
+				<h4>{{model.travelTimes[$index].end}}</h4>
+				<!-- <p>Arrival 7:20 pm (+1 day)</p> -->
+			</div>
+			<!-- <div class="travel__details">
+				<p>Airline: Korean Air</p>
+				<p>Ticket Price: $729</p>
+			</div> -->
+			<h4 class="travel__length">Travel Time: {{model.travelTimes[$index].duration}}</h4>
+		</section>
+	</div>
+
+    <button ng-switch-when='PLANNING' ng-click="model.final()" class="btn btn-success btn-block">Done!</button>
+    <a ng-switch-when='UPCOMING' ng-click="model.revert()" class="btn btn-link link-primary">Move back to planning</a>
 </div>

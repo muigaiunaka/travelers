@@ -29,8 +29,8 @@
 	<section class="upcoming">
 		<h3 class="upcoming__title">Upcoming Trips</h3>
 		<ul class="upcoming__trips list-unstyled panel panel-default">
-			<li class="upcoming__trips__item">
-				<ul class="list-unstyled">
+			<a ng-repeat="trip in model.trips | filter:{state: 'UPCOMING'}" href="#!/user/{{model.userId}}/trip/{{trip._id}}"><li class="upcoming__trips__item">
+				<!-- <ul class="list-unstyled">
 					<li>
 						<span class="glyphicon glyphicon-pencil"></span>
 						Edit
@@ -39,21 +39,21 @@
 						<span class="glyphicon glyphicon-remove"></span>
 						Delete
 					</li>
-				</ul>
-				<h5>Southeast Asia Trip</h5>
-				<p>July 18th, 2017</p>
-				<p>Cambodia, Thailand, Vietnam</p>
-				<p>SFO -> REP</p>
+				</ul> -->
+				<h5>{{trip.name}}</h5>
+				<p>{{model.formatDate(trip.start).getMonth()}}/{{model.formatDate(trip.start).getDate()}}/{{model.formatDate(trip.start).getFullYear()}}</p>
+				<span ng-repeat="country in trip.countries.list">{{country.name}} </span>
+				<!-- <p>SFO -> REP</p>
 				<p>Depart 8:40 am</p>
-				<p>Arrive 7:40 pm</p>
-			</li>
+				<p>Arrive 7:40 pm</p> -->
+			</li></a>
 		</ul>
 	</section>
 
 	<section class="planning">
-		<h3 class="planning__title">Trips in Planning ({{model.trips.length}})</h3>
+		<h3 class="planning__title">Trips in Planning</h3>
 		<ul class="planning__plans list-unstyled">
-			<li class="planning__plans__item panel panel-default" ng-repeat="trip in model.trips">
+			<li class="planning__plans__item panel panel-default" ng-repeat="trip in model.trips | filter:{state: 'PLANNING'}">
 				<ul class="menu list-unstyled">
 					<li>
 						<span class="glyphicon glyphicon-pencil"></span>
