@@ -17,19 +17,21 @@
 		</div>
 	</section>
 
-	<section class="in-progress panel panel-default">
+	<!-- <section class="in-progress panel panel-default">
 		<h3 class="in-progress__title">Trip in Progress</h3>
 		<p class="in-progress__latest">
 			Latest: <span>Tokyo, Japan</span>
 		</p>
 		<p class="in-progress__cost">$2,124</p>
 		<button class="btn btn-primary btn-block">Start a Trip!</button>
-	</section>
+	</section> -->
 
 	<section class="upcoming">
 		<h3 class="upcoming__title">Upcoming Trips</h3>
 		<ul class="upcoming__trips list-unstyled panel panel-default">
-			<a ng-repeat="trip in model.trips | filter:{state: 'UPCOMING'}" href="#!/user/{{model.userId}}/trip/{{trip._id}}"><li class="upcoming__trips__item">
+			<li class="upcoming__trips__item" ng-repeat="trip in model.trips | filter:{state: 'UPCOMING'}">
+				<a href="#!/user/{{model.userId}}/trip/{{trip._id}}">View Trip</a>
+				<button ng-click="model.markComplete(trip)" class="btn btn-primary">Adventured!</button> <!-- this is for testing purposes -->
 				<!-- <ul class="list-unstyled">
 					<li>
 						<span class="glyphicon glyphicon-pencil"></span>
@@ -46,7 +48,7 @@
 				<!-- <p>SFO -> REP</p>
 				<p>Depart 8:40 am</p>
 				<p>Arrive 7:40 pm</p> -->
-			</li></a>
+			</li>
 		</ul>
 	</section>
 
@@ -128,17 +130,15 @@
 	<section class="past">
 		<h3 class="past__title">Past Adventures</h3>
 		<ul class="past__list list-unstyled"> <!-- ng-repeat="trip in model.tripList" -->
-			<li class="trip">
+			<li class="trip" ng-repeat="trip in model.trips | filter:{state: 'COMPLETE'}">
 				<div class="trip__img"><img src="../../../imgs/bamboo.JPG"></div>
 				<div class="trip__copy">
-					<h4 class="trip__copy__title">Walopee's Trip</h4>
+					<h4 class="trip__copy__title">{{trip.name}}</h4>
 					<ul class="trip__copy__countries list-unstyled"> <!-- ng-repeat="country in model.countryList" -->
-						<li class="trip__copy__countries__item">Japan</li>
-						<li class="trip__copy__countries__item">South Korea</li>
-						<li class="trip__copy__countries__item">Thailand</li>
+						<li class="trip__copy__countries__item" ng-repeat="country in trip.countries.list">{{country.name}}</li>
 					</ul>
-					<div class="trip__copy__length">27 days</div>
-					<div class="trip__copy__cost">$3,609</div>
+					<div class="trip__copy__length">{{model.daysBetween(trip.start, trip.end)}} days</div>
+					<!-- <div class="trip__copy__cost">$3,609</div> -->
 				</div>
 			</li>
 		</ul>
