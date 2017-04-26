@@ -5,6 +5,10 @@
 
 	function UserService($http) {
 		var api = {
+            "register": register,
+            "login": login,
+            "checkLoggedin": checkLoggedin,
+            "logout": logout,
             "createUser": createUser,
             "deleteUser": deleteUser,
             "updateUser": updateUser,
@@ -13,6 +17,31 @@
             "findUserByUsername": findUserByUsername
         };
         return api;
+
+        function register(user) {
+            return $http.post("/api/register", user)
+                .then(function (response) {
+                    return response.data;
+                });
+        }
+
+        function login(user) {
+            return $http.post("/api/login", user)
+                .then(function (response) {
+                    return response.data;
+                });
+        }
+
+        function checkLoggedin() {
+            return $http.get('/api/loggedin')
+                .then(function(response) {
+                    return response.data;
+                }, function(err) { console.log(err); });
+        }
+
+        function logout() {
+            return $http.post("/api/logout");
+        }
 
         // returns the user in local users array whose _id matches the userId parameter
         function findUserById(userId) {

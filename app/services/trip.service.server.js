@@ -2,6 +2,7 @@ module.exports = function(app, model) {
     app.post("/api/user/:uid/trip", createTrip);
     app.get("/api/user/:uid/trip", findTripsByUser);
     app.get("/api/trip/:tid", findTripById);
+    app.get("/api/search", findTripsByCountry);
     app.put("/api/trip/:tid", updateTrip);
     app.delete("/api/trip/:tid", deleteTrip);
 
@@ -43,7 +44,6 @@ module.exports = function(app, model) {
 
 	function findTripsByUser(req, res) {
 		var userId = req.params.uid;
-		
 		tripModel
 			.findAllTripsForUser(userId)
 			.then(function(trips) {
@@ -60,6 +60,17 @@ module.exports = function(app, model) {
 			.findTripById(tripId)
 			.then(function(p) {
 				res.json(p);
+			}, function(err) {
+				res.sendStatus(500).send(err);
+			});
+	}
+
+	function findTripsByCountry(req, res) {
+		console.log(req.query.q);
+		tripModel
+			.findTripsByCountry(req.query.q)
+			.then(function(trips) {
+				res.json(trips);
 			}, function(err) {
 				res.sendStatus(500).send(err);
 			});

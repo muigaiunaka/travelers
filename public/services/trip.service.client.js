@@ -11,7 +11,8 @@
             "updateTrip": updateTrip,
             "deleteTrip": deleteTrip,
             "findTripByUserId": findTripByUserId,
-            "findTripById": findTripById
+            "findTripById": findTripById,
+            "findTripsByCountry": findTripsByCountry
         }
         return api;
 
@@ -45,6 +46,16 @@
                     return response.data;
                 });
         }
+
+        // retrieves all the trips with the selected countries
+        function findTripsByCountry(queryStr) {
+            return $http.get("/api/search?q="+queryStr)
+                .then(function (response) {
+                    return response.data;
+                }, function(err) {
+                });
+        }
+
         
         // updates the trip in local trips array whose _id matches the tripId parameter
         function updateTrip(tripId, newtrip) {

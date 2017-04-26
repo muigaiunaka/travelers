@@ -1,30 +1,15 @@
 <section class="container trip-results" id="tripResults">
 	<ul class="trip-list list-unstyled"> <!-- ng-repeat="trip in model.tripList" -->
-		<li class="trip">
+		<li class="trip" ng-repeat="trip in model.trips">
 			<div class="trip__img"><img src="../../../imgs/bamboo.JPG"></div>
 			<div class="trip__copy">
-				<h4 class="trip__copy__title">Walopee's Trip</h4>
+				<!-- <h5>{{model.getOwner(trip._user).username}}</h5> -->
+				<h4 class="trip__copy__title">{{trip.name}}</h4>
 				<ul class="trip__copy__countries list-unstyled"> <!-- ng-repeat="country in model.countryList" -->
-					<li class="trip__copy__countries__item">Japan</li>
-					<li class="trip__copy__countries__item">South Korea</li>
-					<li class="trip__copy__countries__item">Thailand</li>
+					<li class="trip__copy__countries__item" ng-repeat="country in trip.countries.list">{{country.name}}</li>
 				</ul>
-				<div class="trip__copy__length">27 days</div>
-				<div class="trip__copy__cost">$3,609</div>
-			</div>
-		</li>
-		
-		<li class="trip">
-			<div class="trip__img"><img src="../../../imgs/bamboo.JPG"></div>
-			<div class="trip__copy">
-				<h4 class="trip__copy__title">Walopee's Trip</h4>
-				<ul class="trip__copy__countries list-unstyled"> <!-- ng-repeat="country in model.countryList" -->
-					<li class="trip__copy__countries__item">Japan</li>
-					<li class="trip__copy__countries__item">South Korea</li>
-					<li class="trip__copy__countries__item">Thailand</li>
-				</ul>
-				<div class="trip__copy__length">27 days</div>
-				<div class="trip__copy__cost">$3,609</div>
+				<div class="trip__copy__length">{{model.daysBetween(trip.start, trip.end)}} days</div>
+				<div class="trip__copy__cost">{{trip.route.list.length}} cities</div>
 			</div>
 		</li>
 	</ul>

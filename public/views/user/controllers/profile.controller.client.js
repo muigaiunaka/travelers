@@ -3,11 +3,12 @@
 		.module("TravelApp")
 		.controller("profileController", profileController);
 
-	function profileController($routeParams, UserService, TripService, $location) {
+	function profileController($routeParams, UserService, TripService, $location, $rootScope) {
 		var vm = this;
     	vm.userId = $routeParams["uid"];
         vm.update = update;
         vm.remove = remove;
+        vm.logout = logout;
         vm.deleteTrip = deleteTrip;
         vm.isComplete = isComplete;
         vm.formatDate = formatDate;
@@ -48,6 +49,15 @@
                 .then(function(user) {
                     $location.url("/login");
                 });
+        }
+
+        function logout() {
+            UserService
+                .logout()
+                .then(function(response) {
+                    $rootScope.currentUser = null;
+                    $location.url("/");
+                })
         }
 
         function treatAsUTC(date) {

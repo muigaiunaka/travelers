@@ -38,10 +38,17 @@
 			controller: 'registerController',
 			controllerAs: 'model'
 		})
+		.when("/user/", {
+			templateUrl: 'views/user/templates/profile.view.client.html',
+			controller: 'profileController',
+			controllerAs: 'model',
+			resolve: { currentUser: checkLoggedin }
+		})
 		.when("/user/:uid", {
 			templateUrl: 'views/user/templates/profile.view.client.html',
 			controller: 'profileController',
-			controllerAs: 'model'
+			controllerAs: 'model',
+			resolve: { currentUser: checkLoggedin }
 		})
 		.when("/user/:uid/edit", {
 			templateUrl: 'views/user/templates/edit-profile.view.client.html',
@@ -78,12 +85,12 @@
 			controller: 'editPlanTimelineController',
 			controllerAs: 'model'
 		})
-		.when("/trip-results", {
+		.when("/search/trip-results", {
 			templateUrl: 'views/trips/templates/trip-results.view.client.html',
 			controller: 'tripResultController',
 			controllerAs: 'model'
 		})
-		.when("/user/:uid/trip-results", {
+		.when("/user/:uid/search/trip-results", {
 			templateUrl: 'views/trips/templates/trip-results.view.client.html',
 			controller: 'tripResultController',
 			controllerAs: 'model'
@@ -97,6 +104,22 @@
 			templateUrl: 'views/trips/templates/trip-review.view.client.html',
 			controller: 'tripReviewController',
 			controllerAs: 'model'
-		})
-	}
+		});
+  }
+
+    var checkLoggedin = function($q, $timeout, $http, $location, $rootScope, UserService) {
+        var deferred = $q.defer();
+        UserService
+            .checkLoggedin()
+            .then(function(user) {
+                if (user == '0') {
+                    $location.url('/login');
+                    deferred.reject();
+                } else {
+                    $location.url('/user/'+user._id);
+                    deferred.resolve(user);
+                }
+            });
+        return deferred.promise;
+    }
 })();

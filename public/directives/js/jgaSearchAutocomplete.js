@@ -10,8 +10,22 @@
 			var availableTags = [];
 			var selectedTerms = ["hello"];
 			var fillInput = false;
+			var save = true;
 			var el;
 			switch ($(element).attr('id')) {
+				case "searchTrips":
+					el = $(element).find('#search');
+					fillInput = false;
+					save = false;
+					RESTcountry
+						.getAll()
+						.then(function(response) {
+							var temp = response.data;
+							for(var c in temp) {
+								availableTags.push(temp[c].name);
+							}
+						});
+					break;
 				case "selectedCities":
 					el = $(element).find('#dest');
 					fillInput = true;
@@ -60,30 +74,40 @@
 		          	return false;
 		          } else {
 			          var terms = split( this.value );
+
 			          // remove the current input
 			          terms.pop();
 			          // add the selected item
-		          	  TripService
-		          		.findTripById(tripId)
-		          		.then(function(trip) {
-		          			var selectedTerms = trip.countries.list;
-		         			if (selectedTerms.map((e) => (e.name)).indexOf(ui.item.value) == -1) {
-			          			var newTrip = trip;
-			          			newTrip.countries.list.push({
-			          				name: ui.item.value
-			          			});
-			          			TripService
-			          				.updateTrip(tripId, newTrip)
-			          				.then(function(status) {
-			          					//make sure updates to the db are reflected in the view
-			          					scope.model.update();
-			          				});
-		          			}
-		          	  });
-			          // add placeholder to get the comma-and-space at the end
-			          terms.push( "" );
-			          this.value = terms.join( ", " );
-			          return false;
+			          if (save) {
+			          	  TripService
+			          		.findTripById(tripId)
+			          		.then(function(trip) {
+			          			var selectedTerms = trip.countries.list;
+			         			if (selectedTerms.map((e) => (e.name)).indexOf(ui.item.value) == -1) {
+				          			var newTrip = trip;
+				          			newTrip.countries.list.push({
+				          				name: ui.item.value
+				          			});
+				          			TripService
+				          				.updateTrip(tripId, newTrip)
+				          				.then(function(status) {
+				          					//make sure updates to the db are reflected in the view
+				          					scope.model.update();
+				          				});
+			          			}
+			          	  });
+				          // add placeholder to get the comma-and-space at the end
+				          terms.push( "" );
+				          this.value = terms.join( ", " );
+				          return false;
+			          } else {
+			          		this.value = '';
+			          		if (scope.model.queryList.indexOf(ui.item.value) == -1) {
+			          			scope.model.queryList.push(ui.item.value);
+			          		}
+			          		console.log(scope.model.queryList);
+			          		return false;
+			          }
 			        }
 			    }
 		      });

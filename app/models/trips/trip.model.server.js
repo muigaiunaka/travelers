@@ -12,6 +12,7 @@ module.exports = function () {
         "createTripFromPlan": createTripFromPlan,
         "findAllTripsForUser": findAllTripsForUser,
         "findTripById": findTripById,
+        "findTripsByCountry": findTripsByCountry,
         "updateTrip": updateTrip,
         "deleteTrip": deleteTrip
     };
@@ -70,6 +71,29 @@ module.exports = function () {
                 deferred.reject(new Error("Error!!"));
             } else {
                 deferred.resolve(p);
+            }
+        });
+        return deferred.promise;
+    }
+
+    function findTripsByCountry(reqQ) {
+        /* TODO: Fix for 'and' inclusion */
+
+        var deferred = q.defer();
+        console.log("Model "+reqQ);
+        var array = reqQ.split("_");
+        var query = '{';
+        for (var a in array) {
+            query += '"countries.list.name":"'+array[a]+'", ';
+        }
+        
+        query = query.substr(0, query.length-2) + '}';
+
+        tripModel.find(JSON.parse(query), function(err, trips) {
+            if (err) {
+                deferred.reject(new Error("Error!!"));
+            } else {
+                deferred.resolve(trips);
             }
         });
         return deferred.promise;

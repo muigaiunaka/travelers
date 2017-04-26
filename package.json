@@ -4,6 +4,7 @@
   "description": "a place for travelers to come together",
   "main": "server.js",
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.1",
     "cookie-parser": "^1.4.3",
     "ejs": "^2.5.3",

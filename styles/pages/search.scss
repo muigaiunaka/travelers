@@ -8,6 +8,11 @@
 		text-align: center;
 		margin: 20px auto;
 	}
+	&__list {
+		display: block;
+		background-color: $white;
+		&__item {}
+	}
 
 	@include respond-to($tablet) {
 		max-width: 700px;

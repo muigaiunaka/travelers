@@ -10,6 +10,7 @@ module.exports = function (model) {
         "findUserById": findUserById,
         "findUserByUsername": findUserByUsername,
         "findUserByCredentials": findUserByCredentials,
+        "findUserByFacebookId": findUserByFacebookId,
         "updateUser": updateUser,
         "deleteUser": deleteUser
     };
@@ -65,6 +66,20 @@ module.exports = function (model) {
             });
             return deferred.promise;
     }
+
+    function findUserByFacebookId(facebookId) {
+        var deferred = q.defer();
+        userModel.findOne({'facebook': {id: facebookId}},
+            function(err, user) {
+                if(err) {
+                    deferred.reject(new Error("Error!!"));
+                } else {
+                    deferred.resolve(user);
+                }
+            });
+        return deferred.promise;
+    }
+
 
     function updateUser(userId, user) {
         var deferred = q.defer();

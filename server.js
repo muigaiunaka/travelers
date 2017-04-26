@@ -1,24 +1,25 @@
 // var env = require('node-env-file');
 var express = require('express');
 var app = express();
+var q = require('q');
 
 // install, load, and configure body parser module
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: true, limit:'50mb'}));
 app.use(bodyParser.json({limit:'50mb'}));
 
-// var passport = require('passport');
-// var cookieParser = require('cookie-parser');
-// var session = require('express-session');
+var passport = require('passport');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 
-// app.use(session({
-// 	secret: 'this is the secret', //proc.env.session_secret
-// 	resave: true,
-// 	saveUninitialized: true
-// }));
-// app.use(cookieParser());
-// app.use(passport.initialize());
-// app.use(passport.session());
+app.use(session({
+	secret: process.env.SESSION_SECRET || 'secret',
+	resave: true,
+	saveUninitialized: true
+}));
+app.use(cookieParser());
+app.use(passport.initialize());
+app.use(passport.session());
 
 // app.set('view engine', 'ejs');
 
