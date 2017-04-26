@@ -14,7 +14,8 @@ module.exports = function () {
         "findTripById": findTripById,
         "findTripsByCountry": findTripsByCountry,
         "updateTrip": updateTrip,
-        "deleteTrip": deleteTrip
+        "deleteTrip": deleteTrip,
+        "deleteAllTripsByUser": deleteAllTripsByUser
     };
     return api;
 
@@ -26,7 +27,7 @@ module.exports = function () {
         var deferred = q.defer();
         tripModel.create(trip, function(err, t) {
             if (err) {
-                deferred.reject(new Error("Error!!"));
+                deferred.reject(new Error("Could not create Trip"));
             } else {
                 model.userModel
                     .findUserById(userId)
@@ -45,8 +46,7 @@ module.exports = function () {
 
     function createTripFromPlan(userId, planId) {
         var deferred = q.defer();
-        //getplanbyId, remove id and cost?
-        // tripModel.create()
+        /* This has been put on hold for now */
         return deferred.promise;
     }
     
@@ -55,7 +55,7 @@ module.exports = function () {
         
         tripModel.find({_user: userId}, function(err, trips) {
             if (err) {
-                deferred.reject(new Error("Error!!"));
+                deferred.reject(new Error("Could not find trips by user: " +userId));
             } else {
                 deferred.resolve(trips);
             }
@@ -68,7 +68,7 @@ module.exports = function () {
 
         tripModel.findById(tripId, function(err, p) {
             if (err || !p) {
-                deferred.reject(new Error("Error!!"));
+                deferred.reject(new Error("Could not find trip: "+tripId));
             } else {
                 deferred.resolve(p);
             }
@@ -80,18 +80,17 @@ module.exports = function () {
         /* TODO: Fix for 'and' inclusion */
 
         var deferred = q.defer();
-        console.log("Model "+reqQ);
         var array = reqQ.split("_");
-        var query = '{';
+        var query = '{"state":"COMPLETE", ';
         for (var a in array) {
             query += '"countries.list.name":"'+array[a]+'", ';
         }
-        
+
         query = query.substr(0, query.length-2) + '}';
 
         tripModel.find(JSON.parse(query), function(err, trips) {
             if (err) {
-                deferred.reject(new Error("Error!!"));
+                deferred.reject(new Error("Could not find trips"));
             } else {
                 deferred.resolve(trips);
             }
@@ -106,7 +105,7 @@ module.exports = function () {
             .then(function(status) {
                     deferred.resolve(status);
             }, function(err) {
-                deferred.reject(new Error("Error!!"));
+                deferred.reject(new Error("Could not update trip"));
             });
         return deferred.promise;
     }
@@ -126,11 +125,30 @@ module.exports = function () {
                             .then(function(status) {
                                 deferred.resolve(status);
                             }, function(err) {
-                                deferred.reject(new Error("Error!!"));
+                                deferred.reject(new Error("Could not delete trip"));
                             });
                     });
             }
         })
+        return deferred.promise;
+    }
+
+    function deleteAllTripsByUser(userId) {
+        var deferred = q.defer();
+        model.userModel
+            .findUserById(userId)
+            .then(function(user) {
+                user.trips = [];
+                user.save();
+
+                tripModel.remove({_user: userId}, function(err, response) {
+                    if (err) {
+                        deferred.reject(new Error("Could not remove all trips by user: "+userId));
+                    } else {
+                        deferred.resolve(response);
+                    }
+                });
+            });
         return deferred.promise;
     }
 

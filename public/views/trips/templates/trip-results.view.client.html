@@ -1,10 +1,10 @@
 <section class="container trip-results" id="tripResults">
 	<ul class="trip-list list-unstyled"> <!-- ng-repeat="trip in model.tripList" -->
-		<li class="trip" ng-repeat="trip in model.trips">
+		<li class="trip panel panel-default" ng-repeat="trip in model.trips">
 			<div class="trip__img"><img src="../../../imgs/bamboo.JPG"></div>
 			<div class="trip__copy">
-				<!-- <h5>{{model.getOwner(trip._user).username}}</h5> -->
-				<h4 class="trip__copy__title">{{trip.name}}</h4>
+				<h5>{{model.getOwner(trip._user)}}</h5>
+				<h4 class="trip__copy__title"><a href="#!/trip/{{trip._id}}">{{trip.name}}</a></h4>
 				<ul class="trip__copy__countries list-unstyled"> <!-- ng-repeat="country in model.countryList" -->
 					<li class="trip__copy__countries__item" ng-repeat="country in trip.countries.list">{{country.name}}</li>
 				</ul>

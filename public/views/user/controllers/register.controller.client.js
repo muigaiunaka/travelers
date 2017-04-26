@@ -26,30 +26,21 @@
 
     	function register(user) {
     		if (isValidRegistration(user)) {
-    			// UserService
-       //              .findUserByUsername(user.username)
-       //              .then(function(newUser) {
-       //                  if(newUser.message) {
-       //                      vm.error = 'Available';
-
+    			UserService
+                    .findUserByUsername(user.username)
+                    .then(function(newUser) {
+                        if(newUser.message) {
+                            vm.error = 'Available';
                             UserService
                                 .register(user)
                                 .then(function(user) {
                                     $rootScope.currentUser = user;
                                     $location.url("/user/"+user._id);
                                 });
-
-
-
-                            // UserService
-                            //     .createUser(user)
-                            //     .then(function(user) {
-                            //         $location.url("/user/" + user._id);
-                            //     });
-                    //     } else { vm.error = "That Username is taken"; }
-                    // }, function(err) {
-                    //     vm.error = "Something went horribly wrong...";
-                    // });
+                        } else { vm.error = "That Username is taken"; }
+                    }, function(err) {
+                        vm.error = "Something went horribly wrong...";
+                    });
     		} else {
     			vm.error = 'Please fill out all fields';
     		}

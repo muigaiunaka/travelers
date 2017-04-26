@@ -6,6 +6,7 @@ module.exports = function (model) {
     var userModel = mongoose.model('User', userSchema);
 
     var api = {
+        "setModel": setModel,
         "createUser": createUser,
         "findUserById": findUserById,
         "findUserByUsername": findUserByUsername,
@@ -16,11 +17,15 @@ module.exports = function (model) {
     };
     return api;
 
+    function setModel(_model) {
+        model = _model;
+    }
+
     function createUser(user) {
         var deferred = q.defer();
         userModel.create(user, function(err, newuser) {
             if (err) {
-                deferred.reject(new Error("Error!!"));
+                deferred.reject(new Error("Could not create user"));
             } else {
                 deferred.resolve(newuser);
             }
@@ -32,7 +37,7 @@ module.exports = function (model) {
         var deferred = q.defer();
         userModel.findById(userId, function(err, user) {
             if(err || !user) {
-                deferred.reject(new Error("Error!!"));
+                deferred.reject(new Error("Could not find user " + userId));
             } else {
                 deferred.resolve(user);
             }
@@ -44,7 +49,7 @@ module.exports = function (model) {
         var deferred = q.defer();
         userModel.findOne({username: username}, function(err, user) {
             if (err) {
-                deferred.reject(new Error("Error!!"));
+                deferred.reject(new Error("Could not find user with username: "+username));
             }
              else {
                 deferred.resolve(user);
@@ -58,7 +63,7 @@ module.exports = function (model) {
         userModel.findOne({username: username, password: password}, 
             function(err, user) {
                 if (err) {
-                    deferred.reject(new Error("Error!!"));
+                    deferred.reject(new Error("Could not find user with given credentials"));
                 }
                  else {
                     deferred.resolve(user);
@@ -72,7 +77,7 @@ module.exports = function (model) {
         userModel.findOne({'facebook': {id: facebookId}},
             function(err, user) {
                 if(err) {
-                    deferred.reject(new Error("Error!!"));
+                    deferred.reject(new Error("Could not find user with facebook id: "+facebookId));
                 } else {
                     deferred.resolve(user);
                 }
@@ -88,20 +93,24 @@ module.exports = function (model) {
             .then(function(status) {
                 deferred.resolve(status);
             }, function(err) {
-                deferred.reject(new Error("Error!!"));
+                deferred.reject(new Error("Could not update user"));
             });
         return deferred.promise;
     }
 
     function deleteUser(userId) {
         var deferred = q.defer();
-        userModel.remove({_id: userId}, function(err, status) {
-            if(err) {
-                deferred.reject(new Error("Error!!"));
-            } else {
-                deferred.resolve(status);
-            }
-        });
+        model.tripModel
+            .deleteAllTripsByUser(userId)
+            .then(function(response) {
+                userModel.remove({_id: userId}, function(err, status) {
+                    if(err) {
+                        deferred.reject(new Error("Could not delete user"));
+                    } else {
+                        deferred.resolve(status);
+                    }
+                });
+            })
         return deferred.promise;
     }
 };

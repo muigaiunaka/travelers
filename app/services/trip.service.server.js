@@ -66,7 +66,6 @@ module.exports = function(app, model) {
 	}
 
 	function findTripsByCountry(req, res) {
-		console.log(req.query.q);
 		tripModel
 			.findTripsByCountry(req.query.q)
 			.then(function(trips) {

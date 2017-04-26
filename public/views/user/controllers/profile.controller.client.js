@@ -6,8 +6,6 @@
 	function profileController($routeParams, UserService, TripService, $location, $rootScope) {
 		var vm = this;
     	vm.userId = $routeParams["uid"];
-        vm.update = update;
-        vm.remove = remove;
         vm.logout = logout;
         vm.deleteTrip = deleteTrip;
         vm.isComplete = isComplete;
@@ -31,32 +29,14 @@
 		}
 		init();
 
-        function update(newUser) {
-            UserService
-            .updateUser(vm.userId, newUser)
-            .then(function(user) {
-                if(user == null) {
-                    vm.error = "unable to update user";
-                } else {
-                    vm.success = "user successfully updated"
-                }
-            });
-        };
-
-        function remove(user) {
-            UserService
-                .deleteUser(vm.userId)
-                .then(function(user) {
-                    $location.url("/login");
-                });
-        }
-
         function logout() {
             UserService
                 .logout()
                 .then(function(response) {
                     $rootScope.currentUser = null;
                     $location.url("/");
+                }, function (err) {
+                    vm.error = "Something went wrong. Could not logout."
                 })
         }
 
@@ -80,6 +60,8 @@
                         .then(function(trips) {
                             vm.trips = trips;
                         });
+                }, function (err) {
+                    vm.error = "Could not delete trip."
                 })
         }
 
@@ -96,6 +78,8 @@
             TripService
                 .updateTrip(trip._id, newTrip)
                 .then(function(res) {
+                }, function (err) {
+                    vm.error = "Something went wrong. Could not update status."
                 })
         }
 

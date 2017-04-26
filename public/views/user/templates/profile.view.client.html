@@ -1,6 +1,10 @@
 <div class="container profile" id="profile">
 	<div class="bg"></div>
-	<button ng-click="model.logout()" class="btn btn-primary">Logout</button>
+
+    <div ng-show="model.error" class="alert alert-danger" role="alert">
+        {{model.error}}
+    </div>
+    
 	<section class="summary panel clearfix">
 		<div class="summary__edit">
             <a href="#!/user/{{model.userId}}/edit">
@@ -17,6 +21,7 @@
 			<p class="summary__copy__loc">{{model.user.hometown}}</p>
 		</div>
 	</section>
+	<button ng-click="model.logout()" class="btn btn-primary btn-block">Logout</button>
 
 	<!-- <section class="in-progress panel panel-default">
 		<h3 class="in-progress__title">Trip in Progress</h3>
@@ -32,7 +37,6 @@
 		<ul class="upcoming__trips list-unstyled panel panel-default">
 			<li class="upcoming__trips__item" ng-repeat="trip in model.trips | filter:{state: 'UPCOMING'}">
 				<a href="#!/user/{{model.userId}}/trip/{{trip._id}}">View Trip</a>
-				<button ng-click="model.markComplete(trip)" class="btn btn-primary">Adventured!</button> <!-- this is for testing purposes -->
 				<!-- <ul class="list-unstyled">
 					<li>
 						<span class="glyphicon glyphicon-pencil"></span>
@@ -49,6 +53,7 @@
 				<!-- <p>SFO -> REP</p>
 				<p>Depart 8:40 am</p>
 				<p>Arrive 7:40 pm</p> -->
+				<button ng-click="model.markComplete(trip)" class="btn btn-primary btn-block">Adventured!</button> <!-- this is for testing purposes -->
 			</li>
 		</ul>
 	</section>
@@ -58,10 +63,10 @@
 		<ul class="planning__plans list-unstyled">
 			<li class="planning__plans__item panel panel-default" ng-repeat="trip in model.trips | filter:{state: 'PLANNING'}">
 				<ul class="menu list-unstyled">
-					<li>
+					<!-- <li>
 						<span class="glyphicon glyphicon-pencil"></span>
 						Edit
-					</li>
+					</li> -->
 					<li>
 						<button ng-click="model.deleteTrip(trip._id)" class="btn btn-link link-primary">
 							<span class="glyphicon glyphicon-minus"></span>

@@ -1,4 +1,9 @@
 <section class="container edit-profile" id="editProfile">
+
+    <div ng-show="model.error" class="alert alert-danger" role="alert">
+        {{model.error}}
+    </div>
+    
 	<form>
 		<label for="email">email</label>
 		<input ng-model="model.user.email"

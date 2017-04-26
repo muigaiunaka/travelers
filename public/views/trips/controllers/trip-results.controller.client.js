@@ -7,12 +7,23 @@
 		var vm = this;
 		vm.daysBetween = daysBetween;
 		vm.getOwner = getOwner;
+		vm.users = [];
 
 		function init() {
 			TripService
 				.findTripsByCountry($location.search().q)
 				.then(function(trips) {
 					vm.trips = trips;
+					for (var t in vm.trips) {
+						UserService
+							.findUserById(vm.trips[t]._user)
+							.then(function(user) {
+								vm.users.push(user);
+							}, function(err) {
+								vm.trips.splice(t,1);
+							})
+					}
+
 				})
 		}
 		init();
@@ -29,11 +40,11 @@
 		}
 
 		function getOwner(userId) {
-			UserService
-				.findUserById(userId)
-				.then(function(user) {
-					return user;
-				});
+			var i = vm.users.map((e) => e._id).indexOf(userId);
+			if (i != -1) {
+				return vm.users[i].username;
+			}
+			return "";
 		}
 	}
 })();

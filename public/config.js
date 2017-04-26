@@ -7,14 +7,12 @@
 		.when("/", {
 			templateUrl: 'views/trips/templates/search.view.client.html',
 			controller: 'searchController',
-			controllerAs: 'model',
-			state: 'home'
+			controllerAs: 'model'
 		})
 		.when("/user/:uid/search", {
 			templateUrl: 'views/trips/templates/search.view.client.html',
 			controller: 'searchController',
-			controllerAs: 'model',
-			state: 'home'
+			controllerAs: 'model'
 		})
 		.when("/search", {
 			templateUrl: 'views/trips/templates/search.view.client.html',
@@ -24,14 +22,12 @@
 		.when("default", {
 			templateUrl: 'views/trips/templates/search.view.client.html',
 			controller: 'searchController',
-			controllerAs: 'model',
-			state: 'home'
+			controllerAs: 'model'
 		})
 		.when("/login", {
 			templateUrl: 'views/user/templates/login.view.client.html',
 			controller: 'loginController',
-			controllerAs: 'model',
-			state: 'login'
+			controllerAs: 'model'
 		})
 		.when("/register", {
 			templateUrl: 'views/user/templates/register.view.client.html',
@@ -95,7 +91,7 @@
 			controller: 'tripResultController',
 			controllerAs: 'model'
 		})
-		.when("/trip-review", {
+		.when("/trip/:tid", {
 			templateUrl: 'views/trips/templates/trip-review.view.client.html',
 			controller: 'tripReviewController',
 			controllerAs: 'model'

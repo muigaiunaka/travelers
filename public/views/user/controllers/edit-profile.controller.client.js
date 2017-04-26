@@ -36,6 +36,8 @@
                 .deleteUser(vm.userId)
                 .then(function(user) {
                     $location.url("/login");
+                }, function (err) {
+                    vm.error = "unable to delete user"
                 });
         }
 

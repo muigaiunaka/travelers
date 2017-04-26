@@ -111,13 +111,11 @@ module.exports = angular;
 		$routeProvider.when("/", {
 			templateUrl: 'views/trips/templates/search.view.client.html',
 			controller: 'searchController',
-			controllerAs: 'model',
-			state: 'home'
+			controllerAs: 'model'
 		}).when("/user/:uid/search", {
 			templateUrl: 'views/trips/templates/search.view.client.html',
 			controller: 'searchController',
-			controllerAs: 'model',
-			state: 'home'
+			controllerAs: 'model'
 		}).when("/search", {
 			templateUrl: 'views/trips/templates/search.view.client.html',
 			controller: 'searchController',
@@ -125,13 +123,11 @@ module.exports = angular;
 		}).when("default", {
 			templateUrl: 'views/trips/templates/search.view.client.html',
 			controller: 'searchController',
-			controllerAs: 'model',
-			state: 'home'
+			controllerAs: 'model'
 		}).when("/login", {
 			templateUrl: 'views/user/templates/login.view.client.html',
 			controller: 'loginController',
-			controllerAs: 'model',
-			state: 'login'
+			controllerAs: 'model'
 		}).when("/register", {
 			templateUrl: 'views/user/templates/register.view.client.html',
 			controller: 'registerController',
@@ -182,7 +178,7 @@ module.exports = angular;
 			templateUrl: 'views/trips/templates/trip-results.view.client.html',
 			controller: 'tripResultController',
 			controllerAs: 'model'
-		}).when("/trip-review", {
+		}).when("/trip/:tid", {
 			templateUrl: 'views/trips/templates/trip-review.view.client.html',
 			controller: 'tripReviewController',
 			controllerAs: 'model'
@@ -1401,10 +1397,18 @@ module.exports = angular;
 		var vm = this;
 		vm.daysBetween = daysBetween;
 		vm.getOwner = getOwner;
+		vm.users = [];
 
 		function init() {
 			TripService.findTripsByCountry($location.search().q).then(function (trips) {
 				vm.trips = trips;
+				for (var t in vm.trips) {
+					UserService.findUserById(vm.trips[t]._user).then(function (user) {
+						vm.users.push(user);
+					}, function (err) {
+						vm.trips.splice(t, 1);
+					});
+				}
 			});
 		}
 		init();
@@ -1421,9 +1425,13 @@ module.exports = angular;
 		}
 
 		function getOwner(userId) {
-			UserService.findUserById(userId).then(function (user) {
-				return user;
-			});
+			var i = vm.users.map(function (e) {
+				return e._id;
+			}).indexOf(userId);
+			if (i != -1) {
+				return vm.users[i].username;
+			}
+			return "";
 		}
 	}
 })();
@@ -1625,6 +1633,8 @@ module.exports = angular;
         function remove(user) {
             UserService.deleteUser(vm.userId).then(function (user) {
                 $location.url("/login");
+            }, function (err) {
+                vm.error = "unable to delete user";
             });
         }
 
@@ -1653,17 +1663,11 @@ module.exports = angular;
 
 		function login(user) {
 			if (isValidLogin(user)) {
-				// UserService
-				//           .findUserByCredentials(user.username, user.password)
-				//           .then(function(user) { //returns the object that we get from the server
-				//               if(user.message) {
-				//                   vm.error = 'User not found';
-				//               } else { $location.url("/user/" + user._id); }
-				//           }, function(err) { vm.error = 'Something went horribly wrong...'; });
-
 				UserService.login(user).then(function (user) {
 					$rootScope.currentUser = user;
 					$location.url("/user/" + user._id);
+				}, function (err) {
+					vm.error = 'Invalid username/password combination';
 				});
 			} else {
 				vm.error = 'Please fill out all fields';
@@ -1685,8 +1689,6 @@ module.exports = angular;
     function profileController($routeParams, UserService, TripService, $location, $rootScope) {
         var vm = this;
         vm.userId = $routeParams["uid"];
-        vm.update = update;
-        vm.remove = remove;
         vm.logout = logout;
         vm.deleteTrip = deleteTrip;
         vm.isComplete = isComplete;
@@ -1705,26 +1707,12 @@ module.exports = angular;
         }
         init();
 
-        function update(newUser) {
-            UserService.updateUser(vm.userId, newUser).then(function (user) {
-                if (user == null) {
-                    vm.error = "unable to update user";
-                } else {
-                    vm.success = "user successfully updated";
-                }
-            });
-        };
-
-        function remove(user) {
-            UserService.deleteUser(vm.userId).then(function (user) {
-                $location.url("/login");
-            });
-        }
-
         function logout() {
             UserService.logout().then(function (response) {
                 $rootScope.currentUser = null;
                 $location.url("/");
+            }, function (err) {
+                vm.error = "Something went wrong. Could not logout.";
             });
         }
 
@@ -1744,6 +1732,8 @@ module.exports = angular;
                 TripService.findTripByUserId(vm.userId).then(function (trips) {
                     vm.trips = trips;
                 });
+            }, function (err) {
+                vm.error = "Could not delete trip.";
             });
         }
 
@@ -1754,7 +1744,9 @@ module.exports = angular;
         function markComplete(trip) {
             var newTrip = trip;
             newTrip.state = 'COMPLETE';
-            TripService.updateTrip(trip._id, newTrip).then(function (res) {});
+            TripService.updateTrip(trip._id, newTrip).then(function (res) {}, function (err) {
+                vm.error = "Something went wrong. Could not update status.";
+            });
         }
 
         function formatDate(date) {
@@ -1791,26 +1783,19 @@ module.exports = angular;
 
         function register(user) {
             if (isValidRegistration(user)) {
-                // UserService
-                //              .findUserByUsername(user.username)
-                //              .then(function(newUser) {
-                //                  if(newUser.message) {
-                //                      vm.error = 'Available';
-
-                UserService.register(user).then(function (user) {
-                    $rootScope.currentUser = user;
-                    $location.url("/user/" + user._id);
+                UserService.findUserByUsername(user.username).then(function (newUser) {
+                    if (newUser.message) {
+                        vm.error = 'Available';
+                        UserService.register(user).then(function (user) {
+                            $rootScope.currentUser = user;
+                            $location.url("/user/" + user._id);
+                        });
+                    } else {
+                        vm.error = "That Username is taken";
+                    }
+                }, function (err) {
+                    vm.error = "Something went horribly wrong...";
                 });
-
-                // UserService
-                //     .createUser(user)
-                //     .then(function(user) {
-                //         $location.url("/user/" + user._id);
-                //     });
-                //     } else { vm.error = "That Username is taken"; }
-                // }, function(err) {
-                //     vm.error = "Something went horribly wrong...";
-                // });
             } else {
                 vm.error = 'Please fill out all fields';
             }

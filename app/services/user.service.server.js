@@ -15,7 +15,7 @@ module.exports = function(app, model) {
 	       successRedirect: '/#!/user/',
 	       failureRedirect: '/#!/login'
 	}));
-	app.get("/api/user", auth, findUser);
+	app.get("/api/user", findUser);
 	app.get("/api/user/:uid", findUserById);
 	app.put("/api/user/:uid", auth, updateUser);
 	app.delete("/api/user/:uid", auth, deleteUser);
@@ -143,6 +143,7 @@ module.exports = function(app, model) {
 
 	function deleteUser(req, res) {
 		var userId = req.params.uid;
+		req.logOut();
 		userModel
         	.deleteUser(userId)
         	.then(function(status) {

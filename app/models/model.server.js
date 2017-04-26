@@ -9,6 +9,7 @@ module.exports = function(model) {
 		tripModel: tripModel
 	}
 	tripModel.setModel(model);
+	userModel.setModel(model);
 	return model;
 
 };
