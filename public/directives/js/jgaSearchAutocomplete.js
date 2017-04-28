@@ -19,7 +19,12 @@
 					fillInput = false;
 					save = false;
 					for(var c in countries) {
-						availableTags.push(countries[c].name.common);
+						var name = countries[c].name.common;
+						var i = name.indexOf('(');
+						if (i != -1) {
+							name = name.substr(0, i-1);
+						}
+						availableTags.push(name);
 					}
 					break;
 				case "selectedCities":
