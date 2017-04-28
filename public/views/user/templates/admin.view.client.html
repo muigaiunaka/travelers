@@ -1,0 +1,26 @@
+<section class="container admin" id="admin">
+    <h1>Manage Trips</h1>
+
+    <div ng-show="model.error" class="alert alert-danger" role="alert">
+        {{model.error}}
+    </div>
+    <ul class="trip-list list-unstyled">
+        <li class="trip panel panel-default" ng-repeat="trip in model.trips">
+            <div class="trip__img"><img src="../../../imgs/bamboo.JPG"></div>
+            <div class="trip__menu">
+                <button ng-click="model.deleteTrip(trip._id)" class="btn btn-link pull-right">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+            </div>
+            <div class="trip__copy">
+                <h5>{{model.getOwner(trip._user)}}</h5>
+                <h4 class="trip__copy__title"><a href="#!/trip/{{trip._id}}">{{trip.name}}</a></h4>
+                <ul class="trip__copy__countries list-unstyled">
+                    <li class="trip__copy__countries__item" ng-repeat="country in trip.countries.list">{{country.name}}</li>
+                </ul>
+                <div class="trip__copy__length">{{model.daysBetween(trip.start, trip.end)}} days</div>
+                <div class="trip__copy__cost">{{trip.route.list.length}} cities</div>
+            </div>
+        </li>
+    </ul>
+</section>

@@ -13,6 +13,7 @@ module.exports = function () {
         "findAllTripsForUser": findAllTripsForUser,
         "findTripById": findTripById,
         "findTripsByCountry": findTripsByCountry,
+        "findAllTrips": findAllTrips,
         "updateTrip": updateTrip,
         "deleteTrip": deleteTrip,
         "deleteAllTripsByUser": deleteAllTripsByUser
@@ -91,6 +92,18 @@ module.exports = function () {
         tripModel.find(JSON.parse(query), function(err, trips) {
             if (err) {
                 deferred.reject(new Error("Could not find trips"));
+            } else {
+                deferred.resolve(trips);
+            }
+        });
+        return deferred.promise;
+    }
+
+    function findAllTrips() {
+        var deferred = q.defer();
+        tripModel.find({}, function(err, trips) {
+            if (err) {
+                deferred.reject(new Error("Could not get all trips"));
             } else {
                 deferred.resolve(trips);
             }

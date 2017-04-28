@@ -132,6 +132,11 @@ module.exports = angular;
 			templateUrl: 'views/user/templates/register.view.client.html',
 			controller: 'registerController',
 			controllerAs: 'model'
+		}).when("/admin", {
+			templateUrl: 'views/user/templates/admin.view.client.html',
+			controller: 'adminController',
+			controllerAs: 'model',
+			resolve: { adminUser: checkAdmin }
 		}).when("/user/", {
 			templateUrl: 'views/user/templates/profile.view.client.html',
 			controller: 'profileController',
@@ -186,10 +191,12 @@ module.exports = angular;
 			templateUrl: 'views/trips/templates/trip-review.view.client.html',
 			controller: 'tripReviewController',
 			controllerAs: 'model'
+		}).otherwise({
+			redirectTo: '/login'
 		});
 	}
 
-	var checkLoggedin = function checkLoggedin($q, $timeout, $http, $location, $rootScope, UserService) {
+	function checkLoggedin($q, $location, UserService) {
 		var deferred = $q.defer();
 		UserService.checkLoggedin().then(function (user) {
 			if (user == '0') {
@@ -201,7 +208,20 @@ module.exports = angular;
 			}
 		});
 		return deferred.promise;
-	};
+	}
+
+	function checkAdmin($q, UserService, $location) {
+		var defer = $q.defer();
+		UserService.isAdmin().then(function (user) {
+			if (user != '0') {
+				defer.resolve(user);
+			} else {
+				defer.reject();
+				$location.url('/login');
+			}
+		});
+		return defer.promise;
+	}
 })();
 
 /***/ }),
@@ -665,7 +685,8 @@ module.exports = angular;
             "deleteTrip": deleteTrip,
             "findTripByUserId": findTripByUserId,
             "findTripById": findTripById,
-            "findTripsByCountry": findTripsByCountry
+            "findTripsByCountry": findTripsByCountry,
+            "findAllTrips": findAllTrips
         };
         return api;
 
@@ -703,6 +724,12 @@ module.exports = angular;
             }, function (err) {});
         }
 
+        function findAllTrips() {
+            return $http.get("/api/all").then(function (response) {
+                return response.data;
+            });
+        }
+
         // updates the trip in local trips array whose _id matches the tripId parameter
         function updateTrip(tripId, newtrip) {
             return $http.put("/api/trip/" + tripId, newtrip).then(function (response) {
@@ -734,6 +761,7 @@ module.exports = angular;
             "register": register,
             "login": login,
             "checkLoggedin": checkLoggedin,
+            "isAdmin": isAdmin,
             "logout": logout,
             "createUser": createUser,
             "deleteUser": deleteUser,
@@ -761,6 +789,12 @@ module.exports = angular;
                 return response.data;
             }, function (err) {
                 console.log(err);
+            });
+        }
+
+        function isAdmin() {
+            return $http.post('/api/isAdmin').then(function (response) {
+                return response.data;
             });
         }
 
@@ -36445,6 +36479,7 @@ __webpack_require__(10);
 // require ('../public/services/timeline.service.client.js');
 
 /* Controllers */
+__webpack_require__(40);
 __webpack_require__(24);
 __webpack_require__(26);
 __webpack_require__(25);
@@ -38394,7 +38429,7 @@ exports = module.exports = __webpack_require__(34)(undefined);
 
 
 // module
-exports.push([module.i, "/* Variables */\n/* Breakpoints */\n/* Colors */\n/* Components */\n.navbar .navbar-header {\n  position: relative; }\n  .navbar .navbar-header a {\n    color: white; }\n  .navbar .navbar-header .profile-icon {\n    position: absolute;\n    top: 50%;\n    transform: translate(0%, -50%);\n    vertical-align: middle;\n    right: 0; }\n  .navbar .navbar-header--green a {\n    color: #204F20; }\n\n@media only screen and (min-width: 768px) {\n  .navbar .navbar-header {\n    float: none; } }\n\n/* Pages */\n.search {\n  max-width: 450px;\n  margin: 80px auto; }\n  .search .title {\n    max-width: 290px;\n    color: white;\n    font-weight: bold;\n    text-align: center;\n    margin: 20px auto; }\n  .search__list {\n    display: block;\n    background-color: #FFFFFF; }\n  @media only screen and (min-width: 768px) {\n    .search {\n      max-width: 700px; }\n      .search .title {\n        max-width: none; } }\n\n.login {\n  max-width: 560px; }\n  .login h1 {\n    font-weight: bold;\n    color: #FFFFFF; }\n  .login .panel {\n    padding: 15px 10px; }\n    .login .panel label {\n      color: #204F20; }\n    .login .panel .form-control {\n      margin-bottom: 20px; }\n\n.register {\n  color: #FFFFFF;\n  max-width: 450px; }\n  .register__title {\n    font-weight: bold;\n    text-align: center; }\n  .register input {\n    margin-bottom: 20px; }\n  .register a {\n    margin: 5px 20px; }\n\n.profile .bg {\n  top: 0px;\n  left: 0px;\n  z-index: -1;\n  width: 100%;\n  height: 100%;\n  display: block;\n  position: fixed;\n  background-color: #E5F4E3; }\n\n.profile .summary {\n  padding: 0px 20px;\n  position: relative; }\n  .profile .summary__img {\n    display: block;\n    position: relative;\n    top: -30px;\n    height: 100px;\n    width: 100px;\n    overflow: hidden;\n    border-radius: 50%;\n    margin: 0 auto; }\n    .profile .summary__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle;\n      max-height: 100%; }\n  .profile .summary__copy {\n    text-align: center; }\n    .profile .summary__copy__username {\n      font-weight: bold; }\n  .profile .summary__edit {\n    z-index: 1;\n    position: absolute;\n    right: 0;\n    background-color: #FFFFFF;\n    width: 25px;\n    border-bottom-left-radius: 10%;\n    padding: 2px 5px; }\n\n.profile .in-progress {\n  margin: 20px 0 40px;\n  padding: 0px 15px 10px; }\n  .profile .in-progress__title {\n    color: #204F20;\n    font-weight: bold; }\n\n.profile .upcoming {\n  margin-bottom: 40px; }\n  .profile .upcoming__title {\n    color: #6E9E75;\n    font-weight: bold; }\n  .profile .upcoming__trips {\n    padding: 10px 15px; }\n\n.profile .planning {\n  margin-bottom: 40px; }\n  .profile .planning__title {\n    color: #6E9E75;\n    font-weight: bold; }\n  .profile .planning__plans {\n    margin-bottom: 20px; }\n    .profile .planning__plans__item {\n      padding: 10px 15px;\n      position: relative; }\n      .profile .planning__plans__item .menu li {\n        display: inline-block;\n        margin: 0px 5px; }\n    .profile .planning__plans h5 {\n      font-weight: bold;\n      display: block; }\n    .profile .planning__plans .plan-in-progress li a {\n      color: #123812; }\n    .profile .planning__plans .plan-in-progress li .glyphicon-ok {\n      color: #6E9E75; }\n    .profile .planning__plans .plan-in-progress li .glyphicon-remove {\n      color: #D06B6B; }\n\n.profile .past {\n  margin-bottom: 40px; }\n  .profile .past__title {\n    color: #6E9E75;\n    font-weight: bold; }\n  .profile .past__list .trip {\n    display: block;\n    margin: 10px auto;\n    background-color: #FFFFFF;\n    width: 100%;\n    overflow: hidden; }\n    .profile .past__list .trip:first-child {\n      margin-top: 0; }\n    .profile .past__list .trip__img {\n      display: block;\n      width: 100%;\n      position: relative;\n      height: 100px;\n      overflow: hidden; }\n      .profile .past__list .trip__img img {\n        width: 100%;\n        position: absolute;\n        top: 50%;\n        left: 50%;\n        transform: translate(-50%, -50%);\n        vertical-align: middle; }\n    .profile .past__list .trip__copy {\n      padding: 5px 15px 20px; }\n      .profile .past__list .trip__copy__countries {\n        display: block; }\n        .profile .past__list .trip__copy__countries__item {\n          display: inline-block;\n          margin: 5px; }\n          .profile .past__list .trip__copy__countries__item:first-child {\n            margin-left: 0; }\n      .profile .past__list .trip__copy__length {\n        display: inline-block; }\n      .profile .past__list .trip__copy__cost {\n        display: inline-block;\n        margin-left: 10px; }\n\n.trip-results .trip-list .trip {\n  display: block;\n  margin: 10px auto;\n  background-color: #FFFFFF; }\n  .trip-results .trip-list .trip:first-child {\n    margin-top: 0; }\n  .trip-results .trip-list .trip__img {\n    display: block;\n    width: 100%;\n    position: relative;\n    height: 100px;\n    overflow: hidden; }\n    .trip-results .trip-list .trip__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n  .trip-results .trip-list .trip__copy {\n    padding: 5px 15px 20px; }\n    .trip-results .trip-list .trip__copy__countries {\n      display: block; }\n      .trip-results .trip-list .trip__copy__countries__item {\n        display: inline-block;\n        margin: 5px; }\n        .trip-results .trip-list .trip__copy__countries__item:first-child {\n          margin-left: 0; }\n    .trip-results .trip-list .trip__copy__length {\n      display: inline-block; }\n    .trip-results .trip-list .trip__copy__cost {\n      display: inline-block;\n      margin-left: 10px; }\n\n.trip-review {\n  padding: 0; }\n  .trip-review .map {\n    width: 0;\n    height: 0; }\n  .trip-review #map {\n    height: 400px;\n    width: 100%;\n    pointer-events: none; }\n  .trip-review .summary {\n    background-color: #E2DE9D;\n    display: block;\n    width: 100%;\n    padding: 15px; }\n    .trip-review .summary__title {\n      font-weight: bold;\n      color: #204F20; }\n    .trip-review .summary__countries {\n      display: block;\n      width: 100%; }\n      .trip-review .summary__countries__item {\n        display: inline-block;\n        margin: 10px; }\n        .trip-review .summary__countries__item:first-child {\n          margin-left: 0; }\n        .trip-review .summary__countries__item svg {\n          width: 0;\n          height: 0; }\n        .trip-review .summary__countries__item span {\n          color: #204F20;\n          font-weight: bold; }\n    .trip-review .summary__length {\n      display: inline-block;\n      color: #204F20;\n      font-weight: bold; }\n    .trip-review .summary__cities {\n      margin-left: 20px;\n      display: inline-block;\n      color: #204F20;\n      font-weight: bold; }\n    .trip-review .summary__pack {\n      margin-top: 20px; }\n    .trip-review .summary__cost {\n      width: 0;\n      height: 0; }\n  .trip-review .city {\n    position: relative;\n    color: #FFFFFF;\n    padding: 15px;\n    overflow: hidden; }\n    .trip-review .city__bg {\n      z-index: -1;\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n    .trip-review .city__arrival-date {\n      font-size: 12px; }\n    .trip-review .city__name {\n      font-weight: bold;\n      margin: 0; }\n    .trip-review .city__rating {\n      width: 0;\n      height: 0; }\n    .trip-review .city__activity__item {\n      width: 100%;\n      display: block;\n      background-color: #FFFFFF; }\n      .trip-review .city__activity__item .img-container {\n        position: relative;\n        height: 50px;\n        overflow: hidden; }\n        .trip-review .city__activity__item .img-container img {\n          position: absolute;\n          top: 50%;\n          left: 50%;\n          transform: translate(-50%, -50%);\n          vertical-align: middle; }\n      .trip-review .city__activity__item span {\n        color: black; }\n      .trip-review .city__activity__item svg {\n        width: 0;\n        height: 0; }\n    .trip-review .city__cost {\n      width: 0;\n      height: 0; }\n  .trip-review .travel {\n    padding: 15px; }\n    .trip-review .travel__icon {\n      width: 0;\n      height: 0; }\n    .trip-review .travel__airport {\n      display: block;\n      width: 100%;\n      margin-bottom: 20px; }\n      .trip-review .travel__airport p:first-child {\n        text-transform: uppercase;\n        color: #204F20;\n        margin: 0;\n        font-weight: bold; }\n      .trip-review .travel__airport h3 {\n        margin-top: 0;\n        font-weight: bold; }\n    .trip-review .travel__details p {\n      margin: 0; }\n    .trip-review .travel__length {\n      color: #204F20;\n      font-weight: bold; }\n\n.new-plan .bg {\n  top: 0px;\n  left: 0px;\n  z-index: -1;\n  width: 100%;\n  height: 100%;\n  display: block;\n  position: fixed;\n  background-color: #E5F4E3; }\n\n.new-plan h1 {\n  color: #204F20;\n  font-weight: bold; }\n\n.edit-plan-route .route__item {\n  position: relative;\n  padding: 0px 0px 20px 15px;\n  margin-left: 5px;\n  border-left: 1px solid black; }\n  .edit-plan-route .route__item .input-group #from {\n    display: none; }\n  .edit-plan-route .route__item .input-group #to {\n    display: table-cell; }\n  .edit-plan-route .route__item__dir {\n    padding-top: 20px; }\n  .edit-plan-route .route__item__add {\n    position: absolute;\n    top: 0px;\n    left: -8px;\n    padding: 0;\n    margin: 0;\n    background-color: #FFFFFF;\n    height: 17px; }\n  .edit-plan-route .route__item__remove {\n    position: absolute;\n    top: 17px;\n    left: -8px;\n    padding: 0;\n    margin: 0;\n    background-color: #FFFFFF;\n    height: 17px; }\n  .edit-plan-route .route__item:first-child .input-group #from {\n    display: table-cell; }\n  .edit-plan-route .route__item:first-child .input-group #to {\n    display: none; }\n  .edit-plan-route .route__item:first-child .route__item__add {\n    top: 8px; }\n  .edit-plan-route .route__item:first-child .route__item__remove {\n    display: none; }\n  .edit-plan-route .route__item:last-child {\n    padding-bottom: 0px;\n    margin-bottom: 30px; }\n    .edit-plan-route .route__item:last-child .route__item__dir {\n      padding: 0px;\n      display: none; }\n\n.edit-plan-route #map {\n  height: 400px;\n  width: 100%; }\n\n.edit-plan-interest .country {\n  padding: 0;\n  margin-bottom: 30px; }\n  .edit-plan-interest .country__interests__item {\n    min-height: 100px;\n    overflow: hidden;\n    position: relative;\n    padding: 0 5px 10px;\n    background-color: rgba(0, 0, 0, 0.7);\n    border-bottom: 0.1px solid #666;\n    border-right: 0.1px solid #666; }\n    .edit-plan-interest .country__interests__item:nth-child(even) {\n      margin-right: 0; }\n    .edit-plan-interest .country__interests__item img {\n      width: 100%;\n      z-index: -1;\n      filter: brightness(0.7);\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n    .edit-plan-interest .country__interests__item .copy {\n      color: #FFFFFF;\n      font-weight: bold; }\n      .edit-plan-interest .country__interests__item .copy__rating {\n        display: block; }\n    .edit-plan-interest .country__interests__item .glyphicon {\n      position: absolute;\n      right: 0;\n      bottom: 0;\n      top: initial;\n      border-radius: 50%;\n      margin: 6px;\n      font-size: 20px;\n      background-color: #FFFFFF; }\n      .edit-plan-interest .country__interests__item .glyphicon--red {\n        color: red; }\n      .edit-plan-interest .country__interests__item .glyphicon--green {\n        color: #204F20; }\n\n.edit-plan-timeline {\n  margin-bottom: 40px; }\n  .edit-plan-timeline input {\n    margin-bottom: 20px; }\n  .edit-plan-timeline .days {\n    margin-top: 30px; }\n    .edit-plan-timeline .days__item {\n      position: relative;\n      padding: 20px 15px 50px;\n      margin-bottom: 20px; }\n      .edit-plan-timeline .days__item__menu {\n        position: absolute;\n        bottom: 0;\n        right: 10px;\n        margin: 10px 0; }\n        .edit-plan-timeline .days__item__menu a {\n          display: inline-block;\n          margin: 0 5px; }\n\nbody.bg--white {\n  background-color: #FFFFFF; }\n\nbody.bg--dirty-brown {\n  background-color: #E2DE9D; }\n\nbody .bg-img {\n  z-index: -1;\n  filter: blur(3px) brightness(0.7);\n  position: fixed;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  vertical-align: middle; }\n\nbody .btn-primary {\n  border-color: #6E9E75;\n  background-color: #6E9E75; }\n  body .btn-primary:hover {\n    border-color: #638E69;\n    background-color: #638E69; }\n\nbody .btn-success {\n  border-color: #204F20;\n  background-color: #204F20; }\n  body .btn-success:hover {\n    border-color: #123812;\n    background-color: #123812; }\n\nbody .link-primary {\n  color: #204F20; }\n  body .link-primary:hover {\n    color: #123812; }\n", ""]);
+exports.push([module.i, "/* Variables */\n/* Breakpoints */\n/* Colors */\n/* Components */\n.navbar .navbar-header {\n  position: relative; }\n  .navbar .navbar-header a {\n    color: white; }\n  .navbar .navbar-header .profile-icon {\n    position: absolute;\n    top: 50%;\n    transform: translate(0%, -50%);\n    vertical-align: middle;\n    right: 0; }\n  .navbar .navbar-header--green a {\n    color: #204F20; }\n\n@media only screen and (min-width: 768px) {\n  .navbar .navbar-header {\n    float: none; } }\n\n/* Pages */\n.search {\n  max-width: 450px;\n  margin: 80px auto; }\n  .search .title {\n    max-width: 290px;\n    color: white;\n    font-weight: bold;\n    text-align: center;\n    margin: 20px auto; }\n  .search__list {\n    display: block;\n    background-color: #FFFFFF; }\n  @media only screen and (min-width: 768px) {\n    .search {\n      max-width: 700px; }\n      .search .title {\n        max-width: none; } }\n\n.admin .trip-list .trip {\n  display: block;\n  margin: 10px auto;\n  background-color: #FFFFFF; }\n  .admin .trip-list .trip:first-child {\n    margin-top: 0; }\n  .admin .trip-list .trip__img {\n    display: block;\n    width: 100%;\n    position: relative;\n    height: 100px;\n    overflow: hidden; }\n    .admin .trip-list .trip__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n  .admin .trip-list .trip__copy {\n    padding: 5px 15px 20px; }\n    .admin .trip-list .trip__copy__countries {\n      display: block; }\n      .admin .trip-list .trip__copy__countries__item {\n        display: inline-block;\n        margin: 5px; }\n        .admin .trip-list .trip__copy__countries__item:first-child {\n          margin-left: 0; }\n    .admin .trip-list .trip__copy__length {\n      display: inline-block; }\n    .admin .trip-list .trip__copy__cost {\n      display: inline-block;\n      margin-left: 10px; }\n\n.login {\n  max-width: 560px; }\n  .login h1 {\n    font-weight: bold;\n    color: #FFFFFF; }\n  .login .panel {\n    padding: 15px 10px; }\n    .login .panel label {\n      color: #204F20; }\n    .login .panel .form-control {\n      margin-bottom: 20px; }\n\n.register {\n  color: #FFFFFF;\n  max-width: 450px; }\n  .register__title {\n    font-weight: bold;\n    text-align: center; }\n  .register input {\n    margin-bottom: 20px; }\n  .register a {\n    margin: 5px 20px; }\n\n.profile .bg {\n  top: 0px;\n  left: 0px;\n  z-index: -1;\n  width: 100%;\n  height: 100%;\n  display: block;\n  position: fixed;\n  background-color: #E5F4E3; }\n\n.profile .summary {\n  padding: 0px 20px;\n  position: relative; }\n  .profile .summary__img {\n    display: block;\n    position: relative;\n    top: -30px;\n    height: 100px;\n    width: 100px;\n    overflow: hidden;\n    border-radius: 50%;\n    margin: 0 auto; }\n    .profile .summary__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle;\n      max-height: 100%; }\n  .profile .summary__copy {\n    text-align: center; }\n    .profile .summary__copy__username {\n      font-weight: bold; }\n  .profile .summary__edit {\n    z-index: 1;\n    position: absolute;\n    right: 0;\n    background-color: #FFFFFF;\n    width: 25px;\n    border-bottom-left-radius: 10%;\n    padding: 2px 5px; }\n\n.profile .in-progress {\n  margin: 20px 0 40px;\n  padding: 0px 15px 10px; }\n  .profile .in-progress__title {\n    color: #204F20;\n    font-weight: bold; }\n\n.profile .upcoming {\n  margin-bottom: 40px; }\n  .profile .upcoming__title {\n    color: #6E9E75;\n    font-weight: bold; }\n  .profile .upcoming__trips {\n    padding: 10px 15px; }\n\n.profile .planning {\n  margin-bottom: 40px; }\n  .profile .planning__title {\n    color: #6E9E75;\n    font-weight: bold; }\n  .profile .planning__plans {\n    margin-bottom: 20px; }\n    .profile .planning__plans__item {\n      padding: 10px 15px;\n      position: relative; }\n      .profile .planning__plans__item .menu li {\n        display: inline-block;\n        margin: 0px 5px; }\n    .profile .planning__plans h5 {\n      font-weight: bold;\n      display: block; }\n    .profile .planning__plans .plan-in-progress li a {\n      color: #123812; }\n    .profile .planning__plans .plan-in-progress li .glyphicon-ok {\n      color: #6E9E75; }\n    .profile .planning__plans .plan-in-progress li .glyphicon-remove {\n      color: #D06B6B; }\n\n.profile .past {\n  margin-bottom: 40px; }\n  .profile .past__title {\n    color: #6E9E75;\n    font-weight: bold; }\n  .profile .past__list .trip {\n    display: block;\n    margin: 10px auto;\n    background-color: #FFFFFF;\n    width: 100%;\n    overflow: hidden; }\n    .profile .past__list .trip:first-child {\n      margin-top: 0; }\n    .profile .past__list .trip__img {\n      display: block;\n      width: 100%;\n      position: relative;\n      height: 100px;\n      overflow: hidden; }\n      .profile .past__list .trip__img img {\n        width: 100%;\n        position: absolute;\n        top: 50%;\n        left: 50%;\n        transform: translate(-50%, -50%);\n        vertical-align: middle; }\n    .profile .past__list .trip__copy {\n      padding: 5px 15px 20px; }\n      .profile .past__list .trip__copy__countries {\n        display: block; }\n        .profile .past__list .trip__copy__countries__item {\n          display: inline-block;\n          margin: 5px; }\n          .profile .past__list .trip__copy__countries__item:first-child {\n            margin-left: 0; }\n      .profile .past__list .trip__copy__length {\n        display: inline-block; }\n      .profile .past__list .trip__copy__cost {\n        display: inline-block;\n        margin-left: 10px; }\n\n.trip-results .trip-list .trip {\n  display: block;\n  margin: 10px auto;\n  background-color: #FFFFFF; }\n  .trip-results .trip-list .trip:first-child {\n    margin-top: 0; }\n  .trip-results .trip-list .trip__img {\n    display: block;\n    width: 100%;\n    position: relative;\n    height: 100px;\n    overflow: hidden; }\n    .trip-results .trip-list .trip__img img {\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n  .trip-results .trip-list .trip__copy {\n    padding: 5px 15px 20px; }\n    .trip-results .trip-list .trip__copy__countries {\n      display: block; }\n      .trip-results .trip-list .trip__copy__countries__item {\n        display: inline-block;\n        margin: 5px; }\n        .trip-results .trip-list .trip__copy__countries__item:first-child {\n          margin-left: 0; }\n    .trip-results .trip-list .trip__copy__length {\n      display: inline-block; }\n    .trip-results .trip-list .trip__copy__cost {\n      display: inline-block;\n      margin-left: 10px; }\n\n.trip-review {\n  padding: 0; }\n  .trip-review .map {\n    width: 0;\n    height: 0; }\n  .trip-review #map {\n    height: 400px;\n    width: 100%;\n    pointer-events: none; }\n  .trip-review .summary {\n    background-color: #E2DE9D;\n    display: block;\n    width: 100%;\n    padding: 15px; }\n    .trip-review .summary__title {\n      font-weight: bold;\n      color: #204F20; }\n    .trip-review .summary__countries {\n      display: block;\n      width: 100%; }\n      .trip-review .summary__countries__item {\n        display: inline-block;\n        margin: 10px; }\n        .trip-review .summary__countries__item:first-child {\n          margin-left: 0; }\n        .trip-review .summary__countries__item svg {\n          width: 0;\n          height: 0; }\n        .trip-review .summary__countries__item span {\n          color: #204F20;\n          font-weight: bold; }\n    .trip-review .summary__length {\n      display: inline-block;\n      color: #204F20;\n      font-weight: bold; }\n    .trip-review .summary__cities {\n      margin-left: 20px;\n      display: inline-block;\n      color: #204F20;\n      font-weight: bold; }\n    .trip-review .summary__pack {\n      margin-top: 20px; }\n    .trip-review .summary__cost {\n      width: 0;\n      height: 0; }\n  .trip-review .city {\n    position: relative;\n    color: #FFFFFF;\n    padding: 15px;\n    overflow: hidden; }\n    .trip-review .city__bg {\n      z-index: -1;\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n    .trip-review .city__arrival-date {\n      font-size: 12px; }\n    .trip-review .city__name {\n      font-weight: bold;\n      margin: 0; }\n    .trip-review .city__rating {\n      width: 0;\n      height: 0; }\n    .trip-review .city__activity__item {\n      width: 100%;\n      display: block;\n      background-color: #FFFFFF; }\n      .trip-review .city__activity__item .img-container {\n        position: relative;\n        height: 50px;\n        overflow: hidden; }\n        .trip-review .city__activity__item .img-container img {\n          position: absolute;\n          top: 50%;\n          left: 50%;\n          transform: translate(-50%, -50%);\n          vertical-align: middle; }\n      .trip-review .city__activity__item span {\n        color: black; }\n      .trip-review .city__activity__item svg {\n        width: 0;\n        height: 0; }\n    .trip-review .city__cost {\n      width: 0;\n      height: 0; }\n  .trip-review .travel {\n    padding: 15px; }\n    .trip-review .travel__icon {\n      width: 0;\n      height: 0; }\n    .trip-review .travel__airport {\n      display: block;\n      width: 100%;\n      margin-bottom: 20px; }\n      .trip-review .travel__airport p:first-child {\n        text-transform: uppercase;\n        color: #204F20;\n        margin: 0;\n        font-weight: bold; }\n      .trip-review .travel__airport h3 {\n        margin-top: 0;\n        font-weight: bold; }\n    .trip-review .travel__details p {\n      margin: 0; }\n    .trip-review .travel__length {\n      color: #204F20;\n      font-weight: bold; }\n\n.new-plan .bg {\n  top: 0px;\n  left: 0px;\n  z-index: -1;\n  width: 100%;\n  height: 100%;\n  display: block;\n  position: fixed;\n  background-color: #E5F4E3; }\n\n.new-plan h1 {\n  color: #204F20;\n  font-weight: bold; }\n\n.edit-plan-route .route__item {\n  position: relative;\n  padding: 0px 0px 20px 15px;\n  margin-left: 5px;\n  border-left: 1px solid black; }\n  .edit-plan-route .route__item .input-group #from {\n    display: none; }\n  .edit-plan-route .route__item .input-group #to {\n    display: table-cell; }\n  .edit-plan-route .route__item__dir {\n    padding-top: 20px; }\n  .edit-plan-route .route__item__add {\n    position: absolute;\n    top: 0px;\n    left: -8px;\n    padding: 0;\n    margin: 0;\n    background-color: #FFFFFF;\n    height: 17px; }\n  .edit-plan-route .route__item__remove {\n    position: absolute;\n    top: 17px;\n    left: -8px;\n    padding: 0;\n    margin: 0;\n    background-color: #FFFFFF;\n    height: 17px; }\n  .edit-plan-route .route__item:first-child .input-group #from {\n    display: table-cell; }\n  .edit-plan-route .route__item:first-child .input-group #to {\n    display: none; }\n  .edit-plan-route .route__item:first-child .route__item__add {\n    top: 8px; }\n  .edit-plan-route .route__item:first-child .route__item__remove {\n    display: none; }\n  .edit-plan-route .route__item:last-child {\n    padding-bottom: 0px;\n    margin-bottom: 30px; }\n    .edit-plan-route .route__item:last-child .route__item__dir {\n      padding: 0px;\n      display: none; }\n\n.edit-plan-route #map {\n  height: 400px;\n  width: 100%; }\n\n.edit-plan-interest .country {\n  padding: 0;\n  margin-bottom: 30px; }\n  .edit-plan-interest .country__interests__item {\n    min-height: 100px;\n    overflow: hidden;\n    position: relative;\n    padding: 0 5px 10px;\n    background-color: rgba(0, 0, 0, 0.7);\n    border-bottom: 0.1px solid #666;\n    border-right: 0.1px solid #666; }\n    .edit-plan-interest .country__interests__item:nth-child(even) {\n      margin-right: 0; }\n    .edit-plan-interest .country__interests__item img {\n      width: 100%;\n      z-index: -1;\n      filter: brightness(0.7);\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      vertical-align: middle; }\n    .edit-plan-interest .country__interests__item .copy {\n      color: #FFFFFF;\n      font-weight: bold; }\n      .edit-plan-interest .country__interests__item .copy__rating {\n        display: block; }\n    .edit-plan-interest .country__interests__item .glyphicon {\n      position: absolute;\n      right: 0;\n      bottom: 0;\n      top: initial;\n      border-radius: 50%;\n      margin: 6px;\n      font-size: 20px;\n      background-color: #FFFFFF; }\n      .edit-plan-interest .country__interests__item .glyphicon--red {\n        color: red; }\n      .edit-plan-interest .country__interests__item .glyphicon--green {\n        color: #204F20; }\n\n.edit-plan-timeline {\n  margin-bottom: 40px; }\n  .edit-plan-timeline input {\n    margin-bottom: 20px; }\n  .edit-plan-timeline .days {\n    margin-top: 30px; }\n    .edit-plan-timeline .days__item {\n      position: relative;\n      padding: 20px 15px 50px;\n      margin-bottom: 20px; }\n      .edit-plan-timeline .days__item__menu {\n        position: absolute;\n        bottom: 0;\n        right: 10px;\n        margin: 10px 0; }\n        .edit-plan-timeline .days__item__menu a {\n          display: inline-block;\n          margin: 0 5px; }\n\nbody.bg--white {\n  background-color: #FFFFFF; }\n\nbody.bg--dirty-brown {\n  background-color: #E2DE9D; }\n\nbody .bg-img {\n  z-index: -1;\n  filter: blur(3px) brightness(0.7);\n  position: fixed;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  vertical-align: middle; }\n\nbody .btn-primary {\n  border-color: #6E9E75;\n  background-color: #6E9E75; }\n  body .btn-primary:hover {\n    border-color: #638E69;\n    background-color: #638E69; }\n\nbody .btn-success {\n  border-color: #204F20;\n  background-color: #204F20; }\n  body .btn-success:hover {\n    border-color: #123812;\n    background-color: #123812; }\n\nbody .link-primary {\n  color: #204F20; }\n  body .link-primary:hover {\n    color: #123812; }\n", ""]);
 
 // exports
 
@@ -38999,6 +39034,68 @@ try {
 
 module.exports = g;
 
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+	angular.module("TravelApp").controller("adminController", adminController);
+
+	function adminController(UserService, TripService, $location) {
+		var vm = this;
+		vm.daysBetween = daysBetween;
+		vm.getOwner = getOwner;
+		vm.deleteTrip = deleteTrip;
+		vm.users = [];
+
+		function init() {
+			TripService.findAllTrips().then(function (trips) {
+				vm.trips = trips;
+				for (var t in vm.trips) {
+					UserService.findUserById(vm.trips[t]._user).then(function (user) {
+						vm.users.push(user);
+					}, function (err) {
+						vm.trips.splice(t, 1);
+					});
+				}
+			});
+		}
+		init();
+
+		function treatAsUTC(date) {
+			var result = new Date(date);
+			result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
+			return result;
+		}
+
+		function daysBetween(startDate, endDate) {
+			var millisecondsPerDay = 24 * 60 * 60 * 1000;
+			return (treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay + 1;
+		}
+
+		function getOwner(userId) {
+			var i = vm.users.map(function (e) {
+				return e._id;
+			}).indexOf(userId);
+			if (i != -1) {
+				return vm.users[i].username;
+			}
+			return "";
+		}
+
+		function deleteTrip(tripId) {
+			TripService.deleteTrip(tripId).then(function (response) {
+				TripService.findAllTrips().then(function (trips) {
+					vm.trips = trips;
+				});
+			});
+		}
+	}
+})();
 
 /***/ })
 /******/ ]);

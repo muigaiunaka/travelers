@@ -22,6 +22,7 @@ require ('../public/services/google.service.client.js');
 // require ('../public/services/timeline.service.client.js');
 
 /* Controllers */
+require('../public/views/user/controllers/admin.controller.client.js');
 require('../public/views/user/controllers/login.controller.client.js');
 require('../public/views/user/controllers/register.controller.client.js');
 require('../public/views/user/controllers/profile.controller.client.js');

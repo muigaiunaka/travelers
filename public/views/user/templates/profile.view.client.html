@@ -22,6 +22,7 @@
 		</div>
 	</section>
 	<button ng-click="model.logout()" class="btn btn-primary btn-block">Logout</button>
+	<a ng-show="model.user.role == 'ADMIN'" href="#!/admin" class="btn btn-primary btn-block">Manage</a>
 
 	<!-- <section class="in-progress panel panel-default">
 		<h3 class="in-progress__title">Trip in Progress</h3>

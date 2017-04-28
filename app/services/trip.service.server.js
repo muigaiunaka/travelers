@@ -3,6 +3,7 @@ module.exports = function(app, model) {
     app.get("/api/user/:uid/trip", findTripsByUser);
     app.get("/api/trip/:tid", findTripById);
     app.get("/api/search", findTripsByCountry);
+    app.get("/api/all", findAllTrips);
     app.put("/api/trip/:tid", updateTrip);
     app.delete("/api/trip/:tid", deleteTrip);
 
@@ -73,6 +74,16 @@ module.exports = function(app, model) {
 			}, function(err) {
 				res.sendStatus(500).send(err);
 			});
+	}
+
+	function findAllTrips(req, res) {
+		tripModel
+			.findAllTrips()
+			.then(function(trips) {
+				res.json(trips);
+			}, function(err) {
+				res.sendStatus(500).send(err);
+			})
 	}
 
 	function updateTrip(req, res) {

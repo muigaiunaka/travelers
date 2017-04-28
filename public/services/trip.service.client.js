@@ -12,7 +12,8 @@
             "deleteTrip": deleteTrip,
             "findTripByUserId": findTripByUserId,
             "findTripById": findTripById,
-            "findTripsByCountry": findTripsByCountry
+            "findTripsByCountry": findTripsByCountry,
+            "findAllTrips": findAllTrips
         }
         return api;
 
@@ -53,6 +54,13 @@
                 .then(function (response) {
                     return response.data;
                 }, function(err) {
+                });
+        }
+
+        function findAllTrips() {
+            return $http.get("/api/all")
+                .then(function(response) {
+                    return response.data;
                 });
         }
 

@@ -13,6 +13,7 @@ module.exports = function () {
 		phone: String,
 		gender: String,
 		hometown: String,
+   		role: {type: String, enum: ['ADMIN', 'USER'], default: 'USER'},
 		trips: [{type: mongoose.Schema.Types.ObjectId, ref: 'Trip'}],
 		dateCreated: {type: Date, default: Date.now}
     }, {collection: 'users'});

@@ -9,6 +9,7 @@ module.exports = function(app, model) {
 	app.post('/api/register', register);
 	app.post('/api/user', auth, createUser);
 	app.get('/api/loggedin', loggedin);
+	app.post('/api/isAdmin', isAdmin);
 	app.get ('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
 	app.get('/auth/facebook/callback',
 	   passport.authenticate('facebook', {
@@ -124,6 +125,14 @@ module.exports = function(app, model) {
 
 	function loggedin(req, res) {
 		if(req.isAuthenticated()) {
+	        res.json(req.user);
+	    } else {
+	        res.send('0');
+	    }
+	}
+	
+	function isAdmin(req, res) {
+	    if(req.isAuthenticated() && req.user.role == 'ADMIN') {
 	        res.json(req.user);
 	    } else {
 	        res.send('0');

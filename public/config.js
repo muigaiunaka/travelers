@@ -34,6 +34,12 @@
 			controller: 'registerController',
 			controllerAs: 'model'
 		})
+		.when("/admin", {
+			templateUrl: 'views/user/templates/admin.view.client.html',
+			controller: 'adminController',
+			controllerAs: 'model',
+			resolve: { adminUser: checkAdmin }
+		})
 		.when("/user/", {
 			templateUrl: 'views/user/templates/profile.view.client.html',
 			controller: 'profileController',
@@ -100,10 +106,13 @@
 			templateUrl: 'views/trips/templates/trip-review.view.client.html',
 			controller: 'tripReviewController',
 			controllerAs: 'model'
+		})
+		.otherwise({
+			redirectTo: '/login'
 		});
   }
 
-    var checkLoggedin = function($q, $timeout, $http, $location, $rootScope, UserService) {
+    function checkLoggedin($q, $location, UserService) {
         var deferred = $q.defer();
         UserService
             .checkLoggedin()
@@ -117,5 +126,20 @@
                 }
             });
         return deferred.promise;
+    }
+
+    function checkAdmin($q, UserService, $location) {
+        var defer = $q.defer();
+        UserService
+            .isAdmin()
+            .then(function (user) {
+                if(user != '0') {
+                    defer.resolve(user);
+                } else {
+                    defer.reject();
+                    $location.url('/login');
+                }
+            });
+        return defer.promise;
     }
 })();

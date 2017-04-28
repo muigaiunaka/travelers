@@ -24,7 +24,7 @@
 
     <section ng-switch-when='INPROGRESS' class="country col-xs-12" ng-repeat="country in model.trip.countries.list">
       <h3 class="country__name">{{country.name}}</h3>
-      <ul class="country__sorting nav nav-pills">
+      <!-- <ul class="country__sorting nav nav-pills">
         <li class="nav-item">
           <a class="nav-link active" href="#">Popularity</a>
         </li>
@@ -34,7 +34,7 @@
         <li class="nav-item">
           <a class="nav-link" href="#">Alphabetical</a>
         </li>
-      </ul>
+      </ul> -->
       <ul class="country__interests list-unstyled" jga-selectable id="selectable" model="model" country-pois="country.pois">
         <li class="country__interests__item col-xs-6 col-sm-3" ng-repeat="poi in country.pois" id="{{poi.id}}">
             <!-- <img src="#"> -->

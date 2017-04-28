@@ -8,6 +8,7 @@
             "register": register,
             "login": login,
             "checkLoggedin": checkLoggedin,
+            "isAdmin": isAdmin,
             "logout": logout,
             "createUser": createUser,
             "deleteUser": deleteUser,
@@ -37,6 +38,13 @@
                 .then(function(response) {
                     return response.data;
                 }, function(err) { console.log(err); });
+        }
+
+        function isAdmin() {
+            return $http.post('/api/isAdmin')
+                .then(function (response) {
+                    return response.data;
+                });
         }
 
         function logout() {
