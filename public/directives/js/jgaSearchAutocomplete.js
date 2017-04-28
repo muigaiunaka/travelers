@@ -12,19 +12,15 @@
 			var fillInput = false;
 			var save = true;
 			var el;
+			var countries = require("./countries.json");
 			switch ($(element).attr('id')) {
 				case "searchTrips":
 					el = $(element).find('#search');
 					fillInput = false;
 					save = false;
-					RESTcountry
-						.getAll()
-						.then(function(response) {
-							var temp = response.data;
-							for(var c in temp) {
-								availableTags.push(temp[c].name);
-							}
-						});
+					for(var c in countries) {
+						availableTags.push(countries[c].name.common);
+					}
 					break;
 				case "selectedCities":
 					el = $(element).find('#dest');
@@ -34,14 +30,9 @@
 				default:
 					el = $('#search');
 					fillInput = false;
-					RESTcountry
-						.getAll()
-						.then(function(response) {
-							var temp = response.data;
-							for(var c in temp) {
-								availableTags.push(temp[c].name);
-							}
-						});
+					for(var c in countries) {
+						availableTags.push(countries[c].name.common);
+					}
 			}
 
 		    function split( val ) {
