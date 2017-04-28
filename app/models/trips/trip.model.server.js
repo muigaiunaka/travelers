@@ -82,14 +82,17 @@ module.exports = function () {
 
         var deferred = q.defer();
         var array = reqQ.split("_");
-        var query = '{"state":"COMPLETE", ';
+        var query = [];
         for (var a in array) {
-            query += '"countries.list.name":"'+array[a]+'", ';
+            var temp = {
+                $elemMatch: { name: array[a] }
+            }
+            query.push(temp);
         }
 
-        query = query.substr(0, query.length-2) + '}';
+        /* {"countries.list": {$all: [{$elemMatch: {name:"France"}}, {$elemMatch: {name:"Germany"}}]}} */
 
-        tripModel.find(JSON.parse(query), function(err, trips) {
+        tripModel.find({"countries.list": {$all: query}}, function(err, trips) {
             if (err) {
                 deferred.reject(new Error("Could not find trips"));
             } else {

@@ -10,8 +10,7 @@ module.exports = function () {
 		name: String,
 		countries: {
 			list: [{
-				name: String,
-				cities: [String]
+				name: String
 			}], 
 			status: {
 				type: String, 
